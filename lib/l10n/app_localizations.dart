@@ -19828,6 +19828,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select plan tier'**
   String get adminPackagesSelectPlan;
+
+  /// No description provided for @packagesComingSoonBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon'**
+  String get packagesComingSoonBadge;
+
+  /// No description provided for @packagesFreeActiveAllShops.
+  ///
+  /// In en, this message translates to:
+  /// **'Free plan is active for all showrooms during our initial launch.'**
+  String get packagesFreeActiveAllShops;
+
+  /// No description provided for @whatsappFeatureComingSoonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp Messaging — Coming Soon'**
+  String get whatsappFeatureComingSoonTitle;
+
+  /// No description provided for @whatsappFeatureComingSoonBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Automated WhatsApp alerts and credit packs are coming soon. Preview the upcoming packages below.'**
+  String get whatsappFeatureComingSoonBody;
 }
 
 class _AppLocalizationsDelegate

@@ -5,9 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/money_format.dart';
-import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
-import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../services/subscription_data_source.dart';
@@ -169,24 +167,11 @@ class _OwnerSubscriptionMyViewState extends State<OwnerSubscriptionMyView> {
                                           ),
                                 ),
                               )),
-                        const SizedBox(height: 20),
-                        DebouncedButton(
-                          text: l10n.subscriptionManageInPlay,
-                          icon: Icons.play_arrow_rounded,
-                          onPressed: () => AppFeedback.showWarning(
-                              context, l10n.subscriptionManageInPlayNote),
-                        ),
-                        Text(l10n.subscriptionManageInPlayNote,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodySmall),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          width: double.infinity,
-                          child: TextButton(
-                            onPressed: () =>
-                                context.push(RouteNames.ownerSubscription),
-                            child: Text(l10n.subscriptionChangePlan),
-                          ),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.packagesFreeActiveAllShops,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
                     ),

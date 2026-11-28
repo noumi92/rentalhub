@@ -11182,4 +11182,18 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get adminPackagesSelectPlan => 'پلان منتخب کریں';
+
+  @override
+  String get packagesComingSoonBadge => 'جلد آ رہا ہے';
+
+  @override
+  String get packagesFreeActiveAllShops =>
+      'ہمارے ابتدائی لانچ کے دوران تمام شورومز کے لیے مفت پلان فعال ہے۔';
+
+  @override
+  String get whatsappFeatureComingSoonTitle => 'واٹس ایپ میسجنگ — جلد آ رہا ہے';
+
+  @override
+  String get whatsappFeatureComingSoonBody =>
+      'خودکار واٹس ایپ الرٹس اور کریڈٹ پیکس جلد آ رہے ہیں۔ نیچے آنے والے پیکیجز دیکھیں۔';
 }

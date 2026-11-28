@@ -12,6 +12,8 @@ class SubscriptionTierCard extends StatelessWidget {
   final bool isCurrent;
   final bool isPopular;
   final bool isPending;
+  final bool isComingSoon;
+  final bool showActionButton;
   final VoidCallback onSelect;
 
   const SubscriptionTierCard({
@@ -23,6 +25,8 @@ class SubscriptionTierCard extends StatelessWidget {
     this.isCurrent = false,
     this.isPopular = false,
     this.isPending = false,
+    this.isComingSoon = false,
+    this.showActionButton = true,
     required this.onSelect,
   });
 
@@ -61,7 +65,23 @@ class SubscriptionTierCard extends StatelessWidget {
                       ?.copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
-              if (isPopular) ...[
+              if (isComingSoon) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    l10n.packagesComingSoonBadge,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                ),
+              ] else if (isPopular) ...[
                 const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -99,26 +119,28 @@ class SubscriptionTierCard extends StatelessWidget {
                   ],
                 ),
               )),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: (isCurrent || isPending) ? null : onSelect,
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 54),
-                backgroundColor: isPopular ? AppColors.orangeFill : AppColors.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-              child: Text(
-                isCurrent
-                    ? l10n.subscriptionActivePlan
-                    : isPending
-                        ? l10n.subscriptionRequested
-                        : l10n.subscriptionUpgradeTo(title),
+          if (showActionButton) ...[
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: (isCurrent || isPending) ? null : onSelect,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 54),
+                  backgroundColor: isPopular ? AppColors.orangeFill : AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: Text(
+                  isCurrent
+                      ? l10n.subscriptionActivePlan
+                      : isPending
+                          ? l10n.subscriptionRequested
+                          : l10n.subscriptionUpgradeTo(title),
+                ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../owner/presentation/services/subscription_plans.dart';
 import '../../data/datasources/admin_packages_data_source.dart';
+import 'admin_mini_kpi_strip.dart';
 import 'admin_status_chip.dart';
 
 /// Displays all shops with their current subscription tier and WhatsApp
@@ -25,16 +28,43 @@ class AdminShopPlansTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final catalogStrip = AdminMiniKpiStrip(
+      items: [
+        for (final p in subscriptionPlans)
+          AdminMiniKpi(
+            label:
+                '${p.id.toUpperCase()} (${p.carLimit == null ? '∞' : '${p.carLimit} cars'})',
+            value: p.id == 'free'
+                ? 'Active'
+                : 'Rs. ${formatRs(p.monthlyPrice)} · ${l10n?.packagesComingSoonBadge ?? 'Coming Soon'}',
+            icon: Icons.card_membership_rounded,
+            muted: p.id != 'free',
+          ),
+      ],
+    );
     if (shops.isEmpty) {
-      return AppEmptyState(
-        title: l10n?.adminPackagesNoShops ?? 'No shops found.',
-        icon: Icons.store_rounded,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          catalogStrip,
+          Expanded(
+            child: AppEmptyState(
+              title: l10n?.adminPackagesNoShops ?? 'No shops found.',
+              icon: Icons.store_rounded,
+            ),
+          ),
+        ],
       );
     }
-    return ListView.separated(
-      itemCount: shops.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
-      itemBuilder: (context, i) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        catalogStrip,
+        Expanded(
+          child: ListView.separated(
+            itemCount: shops.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            itemBuilder: (context, i) {
         final shop = shops[i];
         final tone = switch (shop.tier) {
           'business' || 'enterprise' => AdminStatusTone.success,
@@ -106,6 +136,9 @@ class AdminShopPlansTab extends StatelessWidget {
           ),
         );
       },
+          ),
+        ),
+      ],
     );
   }
 }

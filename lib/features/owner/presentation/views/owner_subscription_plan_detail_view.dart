@@ -1,21 +1,14 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/utils/current_shop.dart';
-import '../../../../core/utils/money_format.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/debounced_button.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../widgets/manual_bank_transfer_sheet.dart';
 import '../services/subscription_data_source.dart';
 
-/// S2 — plan detail (deck p.17 screen 2). Billing-period selector
-/// (Monthly / Yearly −17%), trial terms, and "Start 14-day free
-/// trial". The trial is requested through the manual bank-transfer
-/// flow with a trial note — the trial itself starts only after admin
-/// approval; no trial dates are shown until they are stored.
+/// S2 — Plan detail preview (initial launch phase): displays full plan
+/// features and pricing with a Coming Soon badge for advanced plans and
+/// hides upgrade/trial application buttons.
 class OwnerSubscriptionPlanDetailView extends StatefulWidget {
   final String planId;
 
@@ -28,7 +21,6 @@ class OwnerSubscriptionPlanDetailView extends StatefulWidget {
 
 class _OwnerSubscriptionPlanDetailViewState
     extends State<OwnerSubscriptionPlanDetailView> {
-  final _dataSource = SubscriptionDataSource();
   bool _yearly = false;
 
   String _planName(AppLocalizations l10n, String id) => switch (id) {
@@ -62,34 +54,11 @@ class _OwnerSubscriptionPlanDetailViewState
           ],
       };
 
-  void _startTrial(SubscriptionPlan plan) {
-    final l10n = AppLocalizations.of(context)!;
-    ManualBankTransferSheet.show(
-      context,
-      title: l10n.subscriptionStartTrial,
-      amount: plan.priceFor(_yearly),
-      note:
-          '${l10n.subscriptionPayByBank}\n${l10n.subscriptionTrialNote}',
-      onSubmit: (trxId) => _dataSource.submitSubscriptionRequest(
-        shopId: currentShopId(),
-        tier: plan.id,
-        billingPeriod: _yearly ? 'yearly' : 'monthly',
-        price: plan.priceFor(_yearly),
-        transactionId: trxId,
-        isTrial: true,
-      ),
-      onSubmitted: () =>
-          AppFeedback.showSuccess(context, l10n.subscriptionRequested),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final plan = subscriptionPlanFor(widget.planId);
     final isFree = plan.id == 'free';
-    final hideExternal =
-        !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -104,12 +73,34 @@ class _OwnerSubscriptionPlanDetailViewState
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 children: [
-                  Text(
-                    l10n.amountRs(formatRs(plan.monthlyFor(_yearly))),
-                    // Audit 2026-11-15 AC-9: headlineMedium is not in
-                    // the §4.5 scale — displayLarge (28/Bold) is the
-                    // price slot.
-                    style: Theme.of(context).textTheme.displayLarge,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          l10n.amountRs(formatRs(plan.monthlyFor(_yearly))),
+                          style: Theme.of(context).textTheme.displayLarge,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: isFree
+                              ? AppColors.accentSuccessStrong
+                              : AppColors.primary,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          isFree
+                              ? l10n.subscriptionCurrentPlan
+                              : l10n.packagesComingSoonBadge,
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelSmall
+                              ?.copyWith(color: Colors.white),
+                        ),
+                      ),
+                    ],
                   ),
                   Text(
                     _yearly
@@ -139,7 +130,8 @@ class _OwnerSubscriptionPlanDetailViewState
                         child: Row(
                           children: [
                             const Icon(Icons.check_circle_rounded,
-                                size: 18, color: AppColors.accentSuccessStrong),
+                                size: 18,
+                                color: AppColors.accentSuccessStrong),
                             const SizedBox(width: 8),
                             Expanded(
                                 child: Text(f,
@@ -149,29 +141,18 @@ class _OwnerSubscriptionPlanDetailViewState
                           ],
                         ),
                       )),
-                  if (!isFree) ...[
-                    const SizedBox(height: 16),
-                    Text(l10n.subscriptionTrialTerms,
-                        style: Theme.of(context).textTheme.bodySmall),
-                    const SizedBox(height: 16),
-                    if (!hideExternal)
-                      DebouncedButton(
-                        text: l10n.subscriptionStartTrial,
-                        icon: Icons.play_arrow_rounded,
-                        onPressed: () => _startTrial(plan),
-                      ),
-                  ],
                   const SizedBox(height: 16),
                   Text(
-                      hideExternal
-                          ? l10n.playLaunchPlanIncluded
-                          : l10n.subscriptionPlayNotConnectedNote,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall),
+                    l10n.packagesFreeActiveAllShops,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                   const SizedBox(height: 8),
-                  Text(l10n.subscriptionExamplePrices,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall),
+                  Text(
+                    l10n.subscriptionExamplePrices,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ],
               ),
             ),

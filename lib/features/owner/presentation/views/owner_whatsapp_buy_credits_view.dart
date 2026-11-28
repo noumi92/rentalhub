@@ -1,25 +1,15 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
-import '../../../../core/utils/money_format.dart';
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../widgets/manual_bank_transfer_sheet.dart';
 import '../services/subscription_data_source.dart';
-import '../services/whatsapp_credits_data_source.dart';
-import '../../../../core/theme/card_decoration.dart';
+import '../widgets/coming_soon_banner.dart';
+import '../widgets/whatsapp_packages_preview_list.dart';
 
-/// W2 — Buy credits (deck p.19 screen 2). Pack cards with the deck's
-/// prices, free monthly credits per plan, and a Buy button that opens
-/// the manual bank-transfer flow — never Google Play, which is not
-/// connected (D1/D2). After submitting, the owner sees the honest
-/// "request submitted" state (W3), not a fake "credits added".
+/// W2 — WhatsApp Credit Packages preview (initial launch phase):
+/// Shows all defined credit packs (Bronze / Silver / Gold) with Coming Soon
+/// badges and hides the Buy / Purchase button until WhatsApp Cloud API launches.
 class OwnerWhatsappBuyCreditsView extends StatefulWidget {
   const OwnerWhatsappBuyCreditsView({super.key});
 
@@ -30,9 +20,7 @@ class OwnerWhatsappBuyCreditsView extends StatefulWidget {
 
 class _OwnerWhatsappBuyCreditsViewState
     extends State<OwnerWhatsappBuyCreditsView> {
-  final _credits = WhatsappCreditsDataSource();
   final _subs = SubscriptionDataSource();
-  WhatsappCreditPack _selected = whatsappCreditPacks[2];
   String _tier = 'free';
 
   @override
@@ -42,155 +30,41 @@ class _OwnerWhatsappBuyCreditsViewState
   }
 
   Future<void> _loadTier() async {
-    // OW-m32: a failed tier load keeps the 'free' tier (and its
-    // free-credits line) instead of throwing into the void.
     try {
       final state = await _subs.getShopSubscription(currentShopId());
       if (mounted) setState(() => _tier = state.tier);
-    } catch (_) {
-      // Keep the 'free' default; the buy flow still works.
-    }
-  }
-
-  void _buy(WhatsappCreditPack pack) {
-    final l10n = AppLocalizations.of(context)!;
-    ManualBankTransferSheet.show(
-      context,
-      title: '${l10n.creditsBuy} · ${pack.name}',
-      amount: pack.price,
-      note: l10n.creditsPayByBank,
-      onSubmit: (trxId) => _credits.submitCreditPurchaseRequest(
-        shopId: currentShopId(),
-        pack: pack.credits,
-        amount: pack.price,
-        transactionId: trxId,
-      ),
-      onSubmitted: () {
-        AppFeedback.showSuccess(context, l10n.creditsRequestSubmittedTitle);
-        context.push(RouteNames.ownerWhatsappCreditsAdded, extra: {
-          'requestSubmitted': true,
-          'pack': pack.credits,
-          'price': pack.price,
-        });
-      },
-    );
+    } catch (_) {}
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final hideExternal =
-        !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
     return Scaffold(
       body: SafeArea(
         top: false,
         child: Column(
           children: [
             MinimalAppBar(
-              title: l10n.creditsBuyTitle,
-              subtitle: l10n.creditsTitle,
+              title: l10n.adminTabWhatsappPackages,
+              subtitle: l10n.packagesComingSoonBadge,
             ),
             Expanded(
               child: ListView(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 children: [
-                  ...whatsappCreditPacks.map((pack) {
-                    final selected = pack == _selected;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: InkWell(
-                        onTap: () => setState(() => _selected = pack),
-                        borderRadius: BorderRadius.circular(16),
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            borderRadius: BorderRadius.circular(16),
-                            border: selected
-                                ? Border.all(
-                                    color: Theme.of(context).colorScheme.primary,
-                                    width: 2,
-                                  )
-                                : null,
-                            boxShadow: AppCardDecoration.shadow(context),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text('${pack.name} · ${pack.credits} ${l10n.creditsTitle}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium
-                                          ?.copyWith(
-                                              fontWeight: FontWeight.w600)),
-                                  if (pack.bestValue)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 3),
-                                      decoration: BoxDecoration(
-                                          // OW-m32: theme token, not raw Colors.green.
-                                          color: AppColors.accentSuccessStrong,
-                                          borderRadius:
-                                              BorderRadius.circular(6)),
-                                      child: Text(l10n.creditsPackBestValue,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelSmall
-                                              ?.copyWith(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w500)),
-                                    ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                  '${l10n.amountRs(formatRs(pack.price))} · ${l10n.amountRs(pack.perMessage)} ${l10n.creditsPerMessage}',
-                                  style:
-                                      Theme.of(context).textTheme.bodyMedium),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                  const SizedBox(height: 4),
-                  Text(l10n.creditsFreeMonthly,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 4),
-                  Text(l10n.creditsFreePlanFree,
-                      style: Theme.of(context).textTheme.bodyMedium),
-                  Text(l10n.creditsFreePlanPro,
-                      style: Theme.of(context).textTheme.bodyMedium),
-                  Text(l10n.creditsFreePlanBusiness,
-                      style: Theme.of(context).textTheme.bodyMedium),
+                  ComingSoonBanner(
+                    title: l10n.whatsappFeatureComingSoonTitle,
+                    body: l10n.whatsappFeatureComingSoonBody,
+                  ),
+                  const SizedBox(height: 14),
+                  WhatsappPackagesPreviewList(tier: _tier),
+                  const SizedBox(height: 12),
                   Text(
-                      '${l10n.creditsFreeLabel}: ${freeMonthlyCreditsForTier(_tier)}',
-                      style: Theme.of(context).textTheme.bodySmall),
-                  const SizedBox(height: 16),
-                  if (hideExternal)
-                    Text(
-                      l10n.playLaunchPlanIncluded,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    )
-                  else
-                    DebouncedButton(
-                      text: l10n.creditsBuyPack,
-                      icon: Icons.add_shopping_cart_rounded,
-                      onPressed: () => _buy(_selected),
-                    ),
-                  const SizedBox(height: 8),
-                  Text(l10n.creditsOneMessage,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall),
+                    l10n.creditsOneMessage,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ],
               ),
             ),

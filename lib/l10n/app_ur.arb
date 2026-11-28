@@ -6337,5 +6337,9 @@
   "adminPackagesActionFailed": "یہ تبدیلی محفوظ نہیں ہو سکی۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
   "adminPackagesReasonHint": "اختیاری نوٹ یا مسترد کرنے کی وجہ",
   "adminPackagesCreditsDeltaLabel": "شامل کرنے کے لیے کریڈٹس (یا کٹوتی کے لیے منفی)",
-  "adminPackagesSelectPlan": "پلان منتخب کریں"
+  "adminPackagesSelectPlan": "پلان منتخب کریں",
+  "packagesComingSoonBadge": "جلد آ رہا ہے",
+  "packagesFreeActiveAllShops": "ہمارے ابتدائی لانچ کے دوران تمام شورومز کے لیے مفت پلان فعال ہے۔",
+  "whatsappFeatureComingSoonTitle": "واٹس ایپ میسجنگ — جلد آ رہا ہے",
+  "whatsappFeatureComingSoonBody": "خودکار واٹس ایپ الرٹس اور کریڈٹ پیکس جلد آ رہے ہیں۔ نیچے آنے والے پیکیجز دیکھیں۔"
 }

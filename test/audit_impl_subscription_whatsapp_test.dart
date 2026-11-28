@@ -30,8 +30,7 @@ Widget _wrap(Widget child) => MaterialApp(
 
 void main() {
   group('Subscription plans (S1–S3)', () {
-    testWidgets('S1 renders the deck chooser, no old prices',
-        (tester) async {
+    testWidgets('S1 renders the deck chooser, no old prices', (tester) async {
       // The plan cards live in a ListView — give the pump a tall
       // viewport so all three cards are built, as on a real phone
       // after scrolling.
@@ -46,13 +45,15 @@ void main() {
       expect(find.text('Free'), findsOneWidget);
       expect(find.text('Pro'), findsOneWidget);
       expect(find.text('Business'), findsOneWidget);
+      expect(find.text('CURRENT PLAN'), findsOneWidget);
+      expect(find.text('Coming Soon'), findsNWidgets(2));
+      expect(find.textContaining('Upgrade to'), findsNothing);
       expect(find.text('Monthly'), findsOneWidget);
       expect(find.textContaining('Save 17%'), findsOneWidget);
-      expect(
-          find.text('Example prices — final pricing to be decided'),
+      expect(find.text('Example prices — final pricing to be decided'),
           findsOneWidget);
-      expect(find.text('Google Play billing is not connected yet'),
-          findsNothing);
+      expect(
+          find.text('Google Play billing is not connected yet'), findsNothing);
       // Old manual-plan prices/names are gone.
       expect(find.text('Starter Freemium'), findsNothing);
       expect(find.text('Pro Showroom'), findsNothing);
@@ -63,8 +64,7 @@ void main() {
       expect(find.textContaining('4242'), findsNothing);
     });
 
-    testWidgets('S1 Yearly toggle shows the yearly totals',
-        (tester) async {
+    testWidgets('S1 Yearly toggle shows the yearly totals', (tester) async {
       await tester.pumpWidget(_wrap(const OwnerSubscriptionView()));
       await tester.pumpAndSettle();
 
@@ -74,22 +74,23 @@ void main() {
       expect(find.textContaining('29,990'), findsOneWidget);
     });
 
-    testWidgets('S2 Pro detail shows trial terms and hides external billing on Android',
+    testWidgets('S2 Pro detail shows Coming Soon and hides apply/trial button',
         (tester) async {
       await tester.pumpWidget(
           _wrap(const OwnerSubscriptionPlanDetailView(planId: 'pro')));
       await tester.pumpAndSettle();
 
       expect(find.text('Start 14-day free trial'), findsNothing);
-      expect(find.textContaining('Free for 14 days'), findsOneWidget);
+      expect(find.text('Coming Soon'), findsOneWidget);
       expect(find.text('14-day trial'), findsOneWidget);
-      expect(find.textContaining('v1.0 launch'), findsOneWidget);
+      expect(find.textContaining('initial launch'), findsOneWidget);
     });
 
-    testWidgets('S3 purchase sheet hides external bank transfer on Android (Play Payments Policy)',
+    testWidgets(
+        'S3 purchase sheet hides external bank transfer on Android (Play Payments Policy)',
         (tester) async {
-      await tester.pumpWidget(_wrap(
-          const OwnerSubscriptionPlayPurchaseView(planId: 'pro')));
+      await tester.pumpWidget(
+          _wrap(const OwnerSubscriptionPlayPurchaseView(planId: 'pro')));
       await tester.pumpAndSettle();
 
       expect(find.text('Google Play billing is not connected yet'),
@@ -104,8 +105,7 @@ void main() {
   group('Subscription state (S4–S6)', () {
     testWidgets('S4 shows the real tier and no invented trial dates',
         (tester) async {
-      await tester.pumpWidget(
-          _wrap(const OwnerSubscriptionActiveView()));
+      await tester.pumpWidget(_wrap(const OwnerSubscriptionActiveView()));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Current plan: Free'), findsOneWidget);
@@ -126,10 +126,12 @@ void main() {
       expect(find.text('0 / 3'), findsOneWidget);
       expect(find.text('0 / 1'), findsOneWidget);
       expect(find.text('No subscription payments yet'), findsOneWidget);
-      expect(find.text('Manage in Google Play'), findsOneWidget);
+      expect(find.text('Manage in Google Play'), findsNothing);
+      expect(find.textContaining('initial launch'), findsOneWidget);
     });
 
-    testWidgets('S6 car-limit sheet shows the real cap and upgrade',
+    testWidgets(
+        'S6 car-limit sheet shows the real cap and Coming Soon notice (no bank transfer)',
         (tester) async {
       await tester.pumpWidget(_wrap(Scaffold(
         body: Builder(
@@ -144,7 +146,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Car limit reached'), findsOneWidget);
-      expect(find.text('Upgrade to Business'), findsOneWidget);
+      expect(find.text('Upgrade to Business'), findsNothing);
+      expect(find.textContaining('Coming Soon'), findsOneWidget);
       expect(find.text('Not now'), findsOneWidget);
       expect(find.textContaining('hidden from listing'), findsOneWidget);
     });
@@ -179,53 +182,52 @@ void main() {
       await tester.pumpWidget(_wrap(const OwnerWhatsappCreditsView()));
       await tester.pumpAndSettle();
 
+      expect(find.text('WhatsApp Messaging — Coming Soon'), findsOneWidget);
       expect(find.text('Credit balance'), findsOneWidget);
       expect(find.text('0'), findsOneWidget);
       expect(find.text('No credits yet'), findsOneWidget);
       expect(find.text('84'), findsNothing);
-      expect(find.text('Auto messages'), findsOneWidget);
-      expect(find.text('Booking request & approval'), findsOneWidget);
-      expect(find.text('Dues reminder'), findsOneWidget);
-      expect(find.text('Buy credits'), findsOneWidget);
-    });
-
-    testWidgets('W2 shows packs and free monthly credits',
-        (tester) async {
-      await tester.pumpWidget(
-          _wrap(const OwnerWhatsappBuyCreditsView()));
-      await tester.pumpAndSettle();
-
-      // Exact titles: textContaining('50 …') also matches the 250 pack.
       expect(find.text('Bronze · 50 WhatsApp Credits'), findsOneWidget);
       expect(find.text('Silver · 105 WhatsApp Credits'), findsOneWidget);
       expect(find.text('Gold · 250 WhatsApp Credits'), findsOneWidget);
-      expect(find.text('Best value'), findsOneWidget);
+      expect(find.text('Auto messages'), findsOneWidget);
+      expect(find.text('Booking request & approval'), findsOneWidget);
+      expect(find.text('Dues reminder'), findsOneWidget);
+      expect(find.text('Buy credits'), findsNothing);
+    });
+
+    testWidgets('W2 shows packs with Coming Soon and hides buy button',
+        (tester) async {
+      await tester.pumpWidget(_wrap(const OwnerWhatsappBuyCreditsView()));
+      await tester.pumpAndSettle();
+
+      expect(find.text('WhatsApp Messaging — Coming Soon'), findsOneWidget);
+      expect(find.text('Bronze · 50 WhatsApp Credits'), findsOneWidget);
+      expect(find.text('Silver · 105 WhatsApp Credits'), findsOneWidget);
+      expect(find.text('Gold · 250 WhatsApp Credits'), findsOneWidget);
+      expect(find.text('Coming Soon'), findsWidgets);
       expect(find.text('Free plan — 10 messages'), findsOneWidget);
       expect(find.text('Pro plan — 30 credits'), findsOneWidget);
       expect(find.text('Business plan — 100 credits'), findsOneWidget);
       expect(find.text('Buy this pack'), findsNothing);
-      expect(find.textContaining('v1.0 launch'), findsOneWidget);
     });
 
     testWidgets('W3 request-submitted state is honest, not "added"',
         (tester) async {
-      await tester.pumpWidget(_wrap(
-          const OwnerWhatsappCreditsAddedView(
-              requestSubmitted: true, pack: 250, price: 999)));
+      await tester.pumpWidget(_wrap(const OwnerWhatsappCreditsAddedView(
+          requestSubmitted: true, pack: 250, price: 999)));
       await tester.pumpAndSettle();
 
       expect(find.text('Request submitted'), findsWidgets);
-      expect(
-          find.text('Credits will be added after payment verification.'),
+      expect(find.text('Credits will be added after payment verification.'),
           findsOneWidget);
       expect(find.text('Credits added'), findsNothing);
     });
 
     testWidgets('W3 added state shows only the passed real balances',
         (tester) async {
-      await tester.pumpWidget(_wrap(
-          const OwnerWhatsappCreditsAddedView(
-              previousBalance: 0, newBalance: 250, pack: 250, price: 999)));
+      await tester.pumpWidget(_wrap(const OwnerWhatsappCreditsAddedView(
+          previousBalance: 0, newBalance: 250, pack: 250, price: 999)));
       await tester.pumpAndSettle();
 
       expect(find.text('Credits added'), findsWidgets);
@@ -252,15 +254,13 @@ void main() {
 
     testWidgets('W5 template shows placeholders, test send disabled',
         (tester) async {
-      await tester.pumpWidget(
-          _wrap(const OwnerWhatsappTemplatePreviewView()));
+      await tester.pumpWidget(_wrap(const OwnerWhatsappTemplatePreviewView()));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('{customerName}'), findsWidgets);
       expect(find.textContaining('{carName}'), findsWidgets);
       expect(find.text('Send test to my number'), findsOneWidget);
-      expect(find.text('Available once WhatsApp is connected.'),
-          findsWidgets);
+      expect(find.text('Available once WhatsApp is connected.'), findsWidgets);
       expect(find.textContaining('Ali Raza'), findsNothing);
     });
 
@@ -280,29 +280,24 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('No credits left'), findsOneWidget);
-      expect(find.text('Buy credits'), findsOneWidget);
+      expect(find.text('Buy credits'), findsNothing);
       expect(find.text('Send via my WhatsApp'), findsOneWidget);
       expect(find.text('Pickup reminder for booking.'), findsOneWidget);
     });
 
-    test('W6 banner trigger: only zero balance + a real skip shows it',
-        () {
-      expect(
-          WhatsappZeroBalanceBanner.shouldShow(balance: 0, skippedCount: 1),
+    test('W6 banner trigger: only zero balance + a real skip shows it', () {
+      expect(WhatsappZeroBalanceBanner.shouldShow(balance: 0, skippedCount: 1),
           isTrue);
-      expect(
-          WhatsappZeroBalanceBanner.shouldShow(balance: 5, skippedCount: 1),
+      expect(WhatsappZeroBalanceBanner.shouldShow(balance: 5, skippedCount: 1),
           isFalse);
-      expect(
-          WhatsappZeroBalanceBanner.shouldShow(balance: 0, skippedCount: 0),
+      expect(WhatsappZeroBalanceBanner.shouldShow(balance: 0, skippedCount: 0),
           isFalse);
     });
 
     test('Credit packs and free allowances match the deck', () {
-      expect(whatsappCreditPacks.map((p) => p.credits).toList(),
-          [50, 105, 250]);
-      expect(whatsappCreditPacks.map((p) => p.price).toList(),
-          [250, 499, 999]);
+      expect(
+          whatsappCreditPacks.map((p) => p.credits).toList(), [50, 105, 250]);
+      expect(whatsappCreditPacks.map((p) => p.price).toList(), [250, 499, 999]);
       expect(whatsappCreditPacks.map((p) => p.name).toList(),
           ['Bronze', 'Silver', 'Gold']);
       expect(whatsappCreditPackForCredits(50)?.name, 'Bronze');

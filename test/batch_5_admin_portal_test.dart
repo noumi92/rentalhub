@@ -108,7 +108,7 @@ void main() {
       expect(find.text('Completed Trip Ledger & Settlements'), findsOneWidget);
     });
 
-    testWidgets('OwnerSubscriptionView: renders tiers and respects Android Play Payments policy',
+    testWidgets('OwnerSubscriptionView: renders Free active, advanced plans Coming Soon, apply buttons hidden',
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -122,17 +122,11 @@ void main() {
       expect(find.text('Choose a plan'), findsOneWidget);
       expect(find.text('Free'), findsOneWidget);
       expect(find.text('Pro'), findsOneWidget);
-
-      await tester.ensureVisible(find.text('Upgrade to Pro'));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Upgrade to Pro'));
-      await tester.pumpAndSettle();
-
-      // Play Store Payments Policy (Option B): Android hides external
-      // bank-transfer checkout and shows the v1.0 launch info notice.
+      expect(find.text('CURRENT PLAN'), findsOneWidget);
+      expect(find.text('Coming Soon'), findsWidgets);
+      expect(find.text('Upgrade to Pro'), findsNothing);
       expect(find.text('Submit Upgrade Verification'), findsNothing);
-      expect(find.textContaining('v1.0 launch'), findsOneWidget);
+      expect(find.textContaining('initial launch'), findsOneWidget);
     });
 
     testWidgets('OwnerWhatsAppLogsView: honest empty state, no fake dispatches',

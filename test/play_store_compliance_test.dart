@@ -138,13 +138,14 @@ void main() {
     });
 
     testWidgets(
-        'OwnerWhatsappBuyCreditsView hides bank transfer buy button on Android',
+        'OwnerWhatsappBuyCreditsView shows Coming Soon and hides buy button',
         (tester) async {
       await tester.pumpWidget(_wrap(const OwnerWhatsappBuyCreditsView()));
       await tester.pumpAndSettle();
 
       expect(find.text('Buy pack'), findsNothing);
-      expect(find.textContaining('v1.0 launch'), findsOneWidget);
+      expect(find.text('Buy this pack'), findsNothing);
+      expect(find.text('WhatsApp Messaging — Coming Soon'), findsOneWidget);
     });
   });
 }

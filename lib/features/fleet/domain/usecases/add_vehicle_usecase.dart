@@ -1,4 +1,5 @@
 import '../../../../core/error/exceptions.dart';
+import '../../../owner/presentation/services/subscription_plans.dart';
 import '../entities/vehicle_entity.dart';
 import '../repositories/fleet_repository.dart';
 
@@ -12,17 +13,17 @@ class AddVehicleUseCase {
     required VehicleEntity vehicle,
   }) async {
     final currentCount = await repository.getActiveVehicleCount(shopId);
-    final subscriptionTier = await repository.getShopSubscriptionTier(shopId);
+    final rawTier = await repository.getShopSubscriptionTier(shopId);
+    final tier = normalizeSubscriptionTier(rawTier);
 
-    // Freemium rule: Free tier max 3 vehicles
-    if (subscriptionTier == 'basic' && currentCount >= 3) {
+    // Freemium rule: Free tier max 3 vehicles (normalizes legacy 'basic' -> 'free').
+    if (tier == 'free' && currentCount >= 3) {
       throw const BusinessRuleException(
         message:
-            'Freemium limit reached. Basic free plan allows up to 3 cars. Please upgrade to Pro to add more vehicles.',
+            'Free plan allows up to 3 vehicles. Pro and Business plans are coming soon — contact support if you need higher capacity.',
       );
     }
 
     return repository.addVehicle(shopId: shopId, vehicle: vehicle);
   }
 }
-

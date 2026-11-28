@@ -11163,4 +11163,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminPackagesSelectPlan => 'Select plan tier';
+
+  @override
+  String get packagesComingSoonBadge => 'Coming Soon';
+
+  @override
+  String get packagesFreeActiveAllShops =>
+      'Free plan is active for all showrooms during our initial launch.';
+
+  @override
+  String get whatsappFeatureComingSoonTitle =>
+      'WhatsApp Messaging — Coming Soon';
+
+  @override
+  String get whatsappFeatureComingSoonBody =>
+      'Automated WhatsApp alerts and credit packs are coming soon. Preview the upcoming packages below.';
 }

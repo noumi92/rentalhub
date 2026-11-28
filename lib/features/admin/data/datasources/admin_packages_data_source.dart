@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
+import '../../../owner/presentation/services/subscription_plans.dart';
 import '../../domain/admin_permissions.dart';
 import '../services/admin_audit_service.dart';
 import '../services/admin_session.dart';
@@ -180,12 +181,12 @@ class AdminPackagesDataSource {
     }
     final rows = shopsSnap.docs.map((doc) {
       final d = doc.data();
-      final tier = (d['subscription_tier'] as String? ?? 'free').toLowerCase();
+      final tier = normalizeSubscriptionTier(d['subscription_tier'] as String?);
       return AdminShopPlanRow(
         shopId: doc.id,
         shopName: (d['shop_name'] as String? ?? d['name'] as String? ?? doc.id),
         city: (d['city'] as String? ?? ''),
-        tier: tier.isEmpty ? 'free' : tier,
+        tier: tier,
         isVerified: (d['verification_status'] as String? ?? '') == 'verified',
         whatsappBalance: balances[doc.id] ?? 0,
       );

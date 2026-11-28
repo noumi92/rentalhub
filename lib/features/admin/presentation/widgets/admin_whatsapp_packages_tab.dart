@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../owner/presentation/services/whatsapp_credits_models.dart';
 import '../../data/datasources/admin_packages_data_source.dart';
+import 'admin_mini_kpi_strip.dart';
 import 'admin_status_chip.dart';
 
 /// Displays WhatsApp credit pack purchase requests with Approve / Reject
@@ -23,17 +25,42 @@ class AdminWhatsappPackagesTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final packStrip = AdminMiniKpiStrip(
+      items: [
+        for (final pack in whatsappCreditPacks)
+          AdminMiniKpi(
+            label: '${pack.name} (${pack.credits})',
+            value:
+                'Rs. ${formatRs(pack.price)} · ${l10n?.packagesComingSoonBadge ?? 'Coming Soon'}',
+            icon: Icons.chat_rounded,
+            muted: true,
+          ),
+      ],
+    );
     if (requests.isEmpty) {
-      return AppEmptyState(
-        title: l10n?.adminPackagesNoCreditRequests ??
-            'No WhatsApp credit requests yet.',
-        icon: Icons.chat_rounded,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          packStrip,
+          Expanded(
+            child: AppEmptyState(
+              title: l10n?.adminPackagesNoCreditRequests ??
+                  'No WhatsApp credit requests yet.',
+              icon: Icons.chat_rounded,
+            ),
+          ),
+        ],
       );
     }
-    return ListView.separated(
-      itemCount: requests.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
-      itemBuilder: (context, i) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        packStrip,
+        Expanded(
+          child: ListView.separated(
+            itemCount: requests.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            itemBuilder: (context, i) {
         final req = requests[i];
         final isPending = req.status == 'pending';
         final tone = switch (req.status) {
@@ -116,6 +143,9 @@ class AdminWhatsappPackagesTab extends StatelessWidget {
           ),
         );
       },
+          ),
+        ),
+      ],
     );
   }
 }

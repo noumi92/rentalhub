@@ -1,22 +1,17 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
-import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../widgets/dashboard/subscription_tier_card.dart';
-import '../widgets/manual_bank_transfer_sheet.dart';
-import 'owner_subscription_limit_sheet.dart';
 import '../services/subscription_data_source.dart';
+import '../widgets/dashboard/subscription_tier_card.dart';
+import 'owner_subscription_limit_sheet.dart';
 
-/// S1 — Choose a plan (deck p.17 screen 1). Gated on D1 (Play Console):
-/// the deck's Monthly/Yearly picker and prices are built, but Google
-/// Play billing is NOT connected — Subscribe opens the existing manual
-/// bank-transfer flow, the only payment path. The current tier is read
-/// from the real `shops` doc, never hardcoded.
+/// S1 — Showroom Membership Plans (initial launch phase):
+/// Free plan is active for all shops; advanced plans (Pro, Business)
+/// show full details with a Coming Soon badge and hidden apply buttons.
 class OwnerSubscriptionView extends StatefulWidget {
   final VoidCallback? onBack;
 
@@ -55,7 +50,6 @@ class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
             l10n.subscriptionProStamp,
             l10n.subscriptionProAccounts,
             l10n.subscriptionProListing,
-            l10n.subscriptionProTrial,
           ],
         'business' => [
             l10n.subscriptionBusinessCars,
@@ -73,41 +67,10 @@ class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
           ],
       };
 
-  void _subscribe(SubscriptionPlan plan) {
-    final l10n = AppLocalizations.of(context)!;
-    ManualBankTransferSheet.show(
-      context,
-      title: l10n.subscriptionUpgradeTo(_planName(l10n, plan.id)),
-      amount: plan.priceFor(_yearly),
-      note: l10n.subscriptionPayByBank,
-      onSubmit: (trxId) => _dataSource.submitSubscriptionRequest(
-        shopId: currentShopId(),
-        tier: plan.id,
-        billingPeriod: _yearly ? 'yearly' : 'monthly',
-        price: plan.priceFor(_yearly),
-        transactionId: trxId,
-        isTrial: false,
-      ),
-      onSubmitted: () {
-        setState(() => _state = ShopSubscriptionState(
-              tier: _state.tier,
-              status: _state.status,
-              trialEndsAt: _state.trialEndsAt,
-              nextBillingAt: _state.nextBillingAt,
-              suspended: _state.suspended,
-              suspensionReason: _state.suspensionReason,
-              pendingTier: plan.id,
-            ));
-        AppFeedback.showSuccess(context, l10n.subscriptionRequested);
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final hideExternal =
-        !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -137,10 +100,32 @@ class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
                         reason: _state.suspensionReason),
                     const SizedBox(height: 14),
                   ],
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: scheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.verified_rounded,
+                            size: 20, color: scheme.primary),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            l10n.packagesFreeActiveAllShops,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
                   SegmentedButton<bool>(
                     segments: [
                       ButtonSegment(
-                          value: false, label: Text(l10n.subscriptionBillingMonthly)),
+                          value: false,
+                          label: Text(l10n.subscriptionBillingMonthly)),
                       ButtonSegment(
                           value: true,
                           label: Text(
@@ -152,8 +137,7 @@ class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
                   ),
                   const SizedBox(height: 14),
                   ...subscriptionPlans.map((plan) {
-                    final isCurrent =
-                        normalizeSubscriptionTier(_state.tier) == plan.id;
+                    final isFree = plan.id == 'free';
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 14),
                       child: Column(
@@ -165,53 +149,19 @@ class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
                             billingPeriod: _yearly
                                 ? l10n.subscriptionPerYear
                                 : l10n.subscriptionPerMonth,
-                            isCurrent: isCurrent,
-                            isPopular: plan.id == 'pro',
-                            isPending:
-                                _state.pendingTier == plan.id ||
-                                    (_state.pendingTier != null &&
-                                        normalizeSubscriptionTier(
-                                                _state.pendingTier) ==
-                                            plan.id),
+                            isCurrent: isFree,
+                            isPopular: false,
+                            isComingSoon: !isFree,
+                            showActionButton: false,
                             features: _features(l10n, plan.id),
-                            onSelect: () {
-                              if (plan.id == 'free') {
-                                GoRouter.maybeOf(context)?.push(
-                                  RouteNames.ownerSubscriptionPlan,
-                                  extra: plan.id,
-                                );
-                              } else if (hideExternal) {
-                                AppFeedback.showInfo(
-                                  context,
-                                  l10n.playLaunchPlanIncluded,
-                                );
-                              } else {
-                                _subscribe(plan);
-                              }
-                            },
+                            onSelect: () {},
                           ),
-                          if (plan.id != 'free')
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: () => context.push(
-                                    RouteNames.ownerSubscriptionPlan,
-                                    extra: plan.id),
-                                child: Text(l10n.subscriptionViewDetails),
-                              ),
-                            ),
                         ],
                       ),
                     );
                   }),
                   Text(
                     l10n.subscriptionExamplePrices,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.subscriptionPlayNotConnectedNote,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),

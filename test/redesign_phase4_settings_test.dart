@@ -46,13 +46,13 @@ void main() {
   }
 
   group('Redesign Phase 4 — owner settings', () {
-    testWidgets('all 17 rows present, grouped under two headings',
+    testWidgets('all 16 items present, grouped under two headings',
         (tester) async {
       await pumpSettings(tester);
       expect(find.text('Showroom Owner'), findsOneWidget);
       expect(find.text('Operations'), findsOneWidget);
       expect(find.text('Account & Alerts'), findsOneWidget);
-      // Language + theme are cards, not rows; the other 15 are rows.
+      // Language + theme are cards, not rows; the other 14 are rows.
       for (final label in [
         'Language',
         'Theme',
@@ -68,8 +68,7 @@ void main() {
         'Notifications',
         'Sync details',
         'Subscription',
-        'WhatsApp Logs',
-        'WhatsApp Credits',
+        'WhatsApp Packages',
         'Reset Options',
       ]) {
         expect(find.text(label), findsWidgets, reason: '$label missing');
@@ -93,7 +92,7 @@ void main() {
       expect(account, greaterThan(booking));
       expect(find.text('Sign Out'), findsOneWidget);
       // Every link row carries a 36x36 pastel circular icon badge.
-      expect(circleBadges(tester), findsNWidgets(15));
+      expect(circleBadges(tester), findsNWidgets(14));
     });
 
     testWidgets('theme options include System and it persists',

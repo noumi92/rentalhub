@@ -1,27 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/utils/current_shop.dart';
-import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/debounced_button.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../widgets/manual_bank_transfer_sheet.dart';
-import '../services/subscription_data_source.dart';
 
-/// S6 — car-limit sheet + payment-issue banner (deck p.17 screen 6).
-///
-/// The sheet appears only when the shop really hits its plan car cap
-/// (Free 3 — the `AddVehicleUseCase` limit; Pro 10; Business
-/// unlimited). The banner appears only when a real payment issue
-/// exists (shop suspended / `suspensionReason` set, or a rejected
-/// subscription request). Neither is ever shown on made-up state.
-///
-/// S6 nav decision (audit §2 nav flag): the deck shows the fleet list
-/// behind the sheet WITH the bottom nav visible, but the app's rule is
-/// that a sheet over a fleet sub-screen hides the nav. This sheet
-/// mounts over the fleet view as a modal bottom sheet, so the tab bar
-/// is hidden while it is open — the app rule wins over the deck
-/// drawing. Integration wires the mount point in the fleet view;
-/// this file only owns the sheet + banner widgets.
+/// S6 — car-limit sheet + payment-issue banner.
+/// During initial launch, paid upgrades are Coming Soon so the sheet never
+/// opens an external bank-transfer checkout.
 class SubscriptionPaymentIssueBanner extends StatelessWidget {
   final String? reason;
 
@@ -46,14 +29,10 @@ class SubscriptionPaymentIssueBanner extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(l10n.subscriptionPaymentIssue,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall
-                        ?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onErrorContainer)),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color:
+                            Theme.of(context).colorScheme.onErrorContainer)),
               ),
             ],
           ),
@@ -76,9 +55,7 @@ class SubscriptionPaymentIssueBanner extends StatelessWidget {
 class CarLimitSheet {
   CarLimitSheet._();
 
-  /// Shows the car-limit sheet. [carsUsed] and [carLimit] are the real
-  /// fleet count and the current plan's cap; callers only call this
-  /// when `carsUsed >= carLimit`.
+  /// Shows the car-limit sheet when `carsUsed >= carLimit`.
   static Future<void> show(
     BuildContext context, {
     required int carsUsed,
@@ -86,7 +63,6 @@ class CarLimitSheet {
     required String planName,
   }) async {
     final l10n = AppLocalizations.of(context)!;
-    final business = subscriptionPlanFor('business');
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -111,35 +87,15 @@ class CarLimitSheet {
             const SizedBox(height: 8),
             Text(l10n.subscriptionDowngradeNote,
                 style: Theme.of(context).textTheme.bodySmall),
-            const SizedBox(height: 16),
-            DebouncedButton(
-              text: l10n.subscriptionUpgradeToBusiness,
-              icon: Icons.workspace_premium_rounded,
-              onPressed: () {
-                Navigator.pop(ctx);
-                ManualBankTransferSheet.show(
-                  context,
-                  title: l10n.subscriptionUpgradeToBusiness,
-                  amount: business.monthlyPrice,
-                  note: l10n.subscriptionPayByBank,
-                  onSubmit: (trxId) => SubscriptionDataSource()
-                      .submitSubscriptionRequest(
-                    shopId: currentShopId(),
-                    tier: 'business',
-                    billingPeriod: 'monthly',
-                    price: business.monthlyPrice,
-                    transactionId: trxId,
-                    isTrial: false,
-                  ),
-                  onSubmitted: () => AppFeedback.showSuccess(
-                      context, l10n.subscriptionRequested),
-                );
-              },
+            const SizedBox(height: 10),
+            Text(
+              '${l10n.packagesComingSoonBadge}: ${l10n.packagesFreeActiveAllShops}',
+              style: Theme.of(context).textTheme.bodySmall,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
-              child: TextButton(
+              child: FilledButton(
                 onPressed: () => Navigator.pop(ctx),
                 child: Text(l10n.subscriptionNotNow),
               ),

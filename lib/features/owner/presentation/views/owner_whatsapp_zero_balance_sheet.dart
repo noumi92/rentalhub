@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../core/routing/route_names.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/whatsapp.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/debounced_button.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// W6 — zero-balance fallback sheet + amber banner (deck p.19
@@ -128,15 +125,6 @@ class ZeroBalanceSheet {
             Text(l10n.creditsViaWhatsappNote,
                 style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 16),
-            DebouncedButton(
-              text: l10n.creditsBuy,
-              icon: Icons.add_shopping_cart_rounded,
-              onPressed: () {
-                Navigator.pop(ctx);
-                context.push(RouteNames.ownerWhatsappBuyCredits);
-              },
-            ),
-            const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(

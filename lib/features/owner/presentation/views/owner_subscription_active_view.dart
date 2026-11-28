@@ -182,15 +182,6 @@ class _OwnerSubscriptionActiveViewState
                               onPressed: () =>
                                   context.go(RouteNames.ownerDashboard),
                             ),
-                            const SizedBox(height: 8),
-                            SizedBox(
-                              width: double.infinity,
-                              child: TextButton(
-                                onPressed: () => context.push(
-                                    RouteNames.ownerSubscription),
-                                child: Text(l10n.subscriptionChangePlan),
-                              ),
-                            ),
                           ],
                         ),
             ),
