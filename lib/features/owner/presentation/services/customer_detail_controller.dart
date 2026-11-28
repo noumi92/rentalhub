@@ -15,12 +15,14 @@ import '../../../customer/domain/repositories/customer_repository.dart';
 /// per-shop status map is keyed by.
 class CustomerDetailData {
   final CustomerEntity? customer;
+  final CustomerEntity? guarantor;
   final List<BookingEntity> bookings;
   final bool blacklisted;
   final String canonicalShopId;
 
   const CustomerDetailData({
     required this.customer,
+    this.guarantor,
     required this.bookings,
     required this.blacklisted,
     required this.canonicalShopId,
@@ -87,8 +89,14 @@ class CustomerDetailController {
         ? null
         : CustomerEntity(customerId: bookings.first.customerId, shopId: shopId, name: bookings.first.customerName ?? '', phone: bookings.first.customerPhone ?? '', cnic: bookings.first.customerCnic, createdAt: bookings.last.pickupTime);
     final blacklisted = customer?.cnic != null && await _blacklistDs.isCnicBlacklisted(customer!.cnic!);
+    CustomerEntity? guarantor;
+    final gid = customer?.guarantorCustomerId;
+    if (gid != null && gid.trim().isNotEmpty) {
+      guarantor = await _customerDs.getCustomerById(gid);
+    }
     return CustomerDetailData(
       customer: customer,
+      guarantor: guarantor,
       bookings: bookings,
       blacklisted: blacklisted,
       canonicalShopId: canonical,

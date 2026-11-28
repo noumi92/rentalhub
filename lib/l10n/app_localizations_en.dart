@@ -11297,4 +11297,58 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get handoverWizardDepositConfirmRequired =>
       'Confirm security deposit received (or set amount to 0) before continuing.';
+
+  @override
+  String get customersProfileShort => 'Profile';
+
+  @override
+  String get customerDetailOutstandingShort => 'Outstanding';
+
+  @override
+  String get customerDetailAddKyc => 'Add KYC';
+
+  @override
+  String get customerDetailKycIncompletePrompt =>
+      'KYC incomplete — upload CNIC & Driving License.';
+
+  @override
+  String get customerDetailGuarantorSection => 'Guarantor Information';
+
+  @override
+  String get customerDetailNoGuarantor => 'No guarantor added yet';
+
+  @override
+  String get customerDetailAddGuarantor => 'Add Guarantor';
+
+  @override
+  String get customerDetailTapToUpload => 'Tap to upload';
+
+  @override
+  String get customerDetailKycDocumentsTitle => 'KYC Documents';
+
+  @override
+  String customerDetailKycUploadedPill(int uploaded, int total) {
+    return '$uploaded / $total Uploaded';
+  }
+
+  @override
+  String get guarantorModeExisting => 'Existing Customer';
+
+  @override
+  String get guarantorModeManual => 'Enter Details';
+
+  @override
+  String get guarantorNameLabel => 'Guarantor Name';
+
+  @override
+  String get guarantorPhoneLabel => 'Guarantor Phone';
+
+  @override
+  String get guarantorCnicLabel => 'Guarantor CNIC';
+
+  @override
+  String get guarantorAddressLabel => 'Guarantor Address';
+
+  @override
+  String get guarantorRelationLabel => 'Relation';
 }

@@ -50,6 +50,10 @@ class CustomerEntity extends Equatable {
   final String? signatureUrl;
   final String? guarantorCustomerId;
   final String? guarantorRelation;
+  final String? guarantorName;
+  final String? guarantorPhone;
+  final String? guarantorCnic;
+  final String? guarantorAddress;
 
   /// Owner-deck finish (#35): owner approval of a customer profile.
   /// 'pending' | 'approved' | 'rejected'. New records start pending;
@@ -133,6 +137,10 @@ class CustomerEntity extends Equatable {
     this.signatureUrl,
     this.guarantorCustomerId,
     this.guarantorRelation,
+    this.guarantorName,
+    this.guarantorPhone,
+    this.guarantorCnic,
+    this.guarantorAddress,
     this.approvalStatus = 'pending',
     this.rejectionReason,
     this.reviewedAt,
@@ -167,6 +175,10 @@ class CustomerEntity extends Equatable {
     String? signatureUrl,
     String? guarantorCustomerId,
     String? guarantorRelation,
+    String? guarantorName,
+    String? guarantorPhone,
+    String? guarantorCnic,
+    String? guarantorAddress,
     String? approvalStatus,
     String? rejectionReason,
     bool clearRejectionReason = false,
@@ -204,6 +216,10 @@ class CustomerEntity extends Equatable {
       signatureUrl: signatureUrl ?? this.signatureUrl,
       guarantorCustomerId: guarantorCustomerId ?? this.guarantorCustomerId,
       guarantorRelation: guarantorRelation ?? this.guarantorRelation,
+      guarantorName: guarantorName ?? this.guarantorName,
+      guarantorPhone: guarantorPhone ?? this.guarantorPhone,
+      guarantorCnic: guarantorCnic ?? this.guarantorCnic,
+      guarantorAddress: guarantorAddress ?? this.guarantorAddress,
       approvalStatus: approvalStatus ?? this.approvalStatus,
       rejectionReason: clearRejectionReason
           ? null
@@ -248,6 +264,10 @@ class CustomerEntity extends Equatable {
         signatureUrl,
         guarantorCustomerId,
         guarantorRelation,
+        guarantorName,
+        guarantorPhone,
+        guarantorCnic,
+        guarantorAddress,
         approvalStatus,
         rejectionReason,
         reviewedAt,

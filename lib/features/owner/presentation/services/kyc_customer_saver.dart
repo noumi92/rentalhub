@@ -141,7 +141,11 @@ class KycCustomerSaver {
       signatureUrl: kept('signatureUrl'),
       guarantorCustomerId: draft.guarantorCustomerId,
       guarantorRelation:
-          draft.guarantorCustomerId == null ? null : draft.guarantorRelation,
+          draft.hasGuarantor ? draft.guarantorRelation : null,
+      guarantorName: _orNull(draft.guarantorName),
+      guarantorPhone: _orNull(draft.guarantorPhone),
+      guarantorCnic: _orNull(draft.guarantorCnic),
+      guarantorAddress: _orNull(draft.guarantorAddress),
       approvalStatus: existing?.approvalStatus ?? 'pending',
       rejectionReason: existing?.rejectionReason,
       reviewedAt: existing?.reviewedAt,

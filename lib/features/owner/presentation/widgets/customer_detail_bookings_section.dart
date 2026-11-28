@@ -42,7 +42,8 @@ class _CustomerDetailBookingsSectionState
     'cancelled',
   ];
 
-  String _statusLabel(AppLocalizations l10n, String status) => {
+  String _statusLabel(AppLocalizations l10n, String status) =>
+      {
         'all': l10n.customersFilterAll,
         'requested': l10n.requestsStatusRequested,
         'payment_submitted': l10n.statusProofSubmitted,
@@ -153,15 +154,24 @@ class _CustomerDetailBookingsSectionState
         b.remainingBalance > 0 &&
         const {'approved', 'paid', 'active', 'completed'}.contains(b.status);
 
-    return Card(
+    final cs = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final borderColor = isDark ? cs.outlineVariant : AppColors.borderSubtle;
+
+    return Container(
       margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: borderColor),
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         onTap: () => context.push(
           RouteNames.ownerRequestsDetail.replaceFirst(':id', b.bookingId),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -173,7 +183,7 @@ class _CustomerDetailBookingsSectionState
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w600),
+                          ?.copyWith(fontWeight: FontWeight.w700),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -181,10 +191,10 @@ class _CustomerDetailBookingsSectionState
                   const SizedBox(width: 8),
                   Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
                     decoration: BoxDecoration(
                       color: chipBg,
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
                       _statusLabel(l10n, b.status),
@@ -196,33 +206,50 @@ class _CustomerDetailBookingsSectionState
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     formatDate(context, b.pickupTime),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          color: cs.onSurfaceVariant,
                         ),
                   ),
                   Text(
                     l10n.amountRs(formatRs(b.totalAmount)),
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
                   ),
                 ],
               ),
               if (b.remainingBalance > 0 &&
                   b.status != 'cancelled' &&
                   b.status != 'rejected') ...[
-                const SizedBox(height: 2),
-                Text(
-                  '${l10n.bookingFareRemaining}: ${l10n.amountRs(formatRs(b.remainingBalance))}',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                const SizedBox(height: 10),
+                Divider(height: 1, color: borderColor.withValues(alpha: 0.7)),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${l10n.bookingFareRemaining}: ${l10n.amountRs(formatRs(b.remainingBalance))}',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
                         color: AppColors.orangeTextFor(
                             Theme.of(context).brightness),
                         fontWeight: FontWeight.w600,
+                        fontFeatures: const [FontFeature.tabularFigures()],
                       ),
+                    ),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      size: 18,
+                      color:
+                          AppColors.orangeTextFor(Theme.of(context).brightness),
+                    ),
+                  ],
                 ),
               ],
               if (step.kind == BookingNextStepKind.recordPayment ||

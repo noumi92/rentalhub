@@ -23,10 +23,12 @@ class OwnerEditCustomerLoader extends StatefulWidget {
     super.key,
     required this.customerId,
     this.customer,
+    this.initialStep = 0,
   });
 
   final String customerId;
   final CustomerEntity? customer;
+  final int initialStep;
 
   @override
   State<OwnerEditCustomerLoader> createState() =>
@@ -107,6 +109,9 @@ class _OwnerEditCustomerLoaderState extends State<OwnerEditCustomerLoader> {
       }
       return OwnerCustomerDetailView(customerId: widget.customerId);
     }
-    return OwnerAddCustomerWizard(editingCustomer: customer);
+    return OwnerAddCustomerWizard(
+      editingCustomer: customer,
+      initialStep: widget.initialStep,
+    );
   }
 }

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:signature/signature.dart';
 
 import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/media_picker_helper.dart';
@@ -13,8 +12,8 @@ import 'doc_photo_tile.dart';
 import 'kyc_draft.dart';
 import 'kyc_step.dart';
 
-/// Wizard step 3 — driving license, utility bill, extra documents,
-/// customer signature and the rental terms (spec O14).
+/// Wizard step 2 — driving license (front/back, number, expiry) and
+/// rental terms. KYC documents are strictly CNIC & Driving License.
 class Step3Docs extends StatefulWidget {
   final KycDraft draft;
   final VoidCallback onChanged;
@@ -28,8 +27,6 @@ class Step3Docs extends StatefulWidget {
 class Step3DocsState extends KycStepState<Step3Docs> {
   late final TextEditingController _licenseNumberController;
   late final TextEditingController _licenseExpiryController;
-  late final SignatureController _signatureController;
-  late bool _signed;
   bool _scanningLicenseFront = false;
   bool _scanningLicenseBack = false;
 
@@ -38,15 +35,12 @@ class Step3DocsState extends KycStepState<Step3Docs> {
     super.initState();
     _licenseNumberController = TextEditingController(text: widget.draft.licenseNumber);
     _licenseExpiryController = TextEditingController(text: widget.draft.licenseExpiry);
-    _signatureController = SignatureController(penStrokeWidth: 3, penColor: Colors.black);
-    _signed = widget.draft.hasSignature;
   }
 
   @override
   void dispose() {
     _licenseNumberController.dispose();
     _licenseExpiryController.dispose();
-    _signatureController.dispose();
     super.dispose();
   }
 
@@ -64,34 +58,27 @@ class Step3DocsState extends KycStepState<Step3Docs> {
     return null;
   }
 
-  /// FG-16: name the FIRST missing item instead of one generic
-  /// "step incomplete" for all seven requirements, so the owner
-  /// knows exactly what to add; an empty signature pad and the
-  /// unaccepted terms each get their own message.
   @override
   Future<bool> validate() async {
     final d = widget.draft;
     final l10n = AppLocalizations.of(context)!;
-    // First missing item wins, in screen order.
-    final missing = !d.hasLicenseFront ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseFront)
-        : !d.hasLicenseBack ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseBack)
-        : d.licenseNumber.trim().isEmpty ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseNumber)
-        : d.licenseExpiry.trim().isEmpty ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseExpiry)
-        : _validateDate(d.licenseExpiry, l10n.kycWizardDateFormatError) != null ? l10n.kycWizardDateFormatError
-        : !d.hasUtilityBill ? l10n.kycWizardMissingItem(l10n.kycWizardUtilityBill)
-        : !d.hasSignature ? l10n.kycWizardSignatureMissing
-        : !d.termsAgreed ? l10n.kycWizardTermsMissing
-        : null;
+    final missing = !d.hasLicenseFront
+        ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseFront)
+        : !d.hasLicenseBack
+            ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseBack)
+            : d.licenseNumber.trim().isEmpty
+                ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseNumber)
+                : d.licenseExpiry.trim().isEmpty
+                    ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseExpiry)
+                    : _validateDate(d.licenseExpiry,
+                                l10n.kycWizardDateFormatError) !=
+                            null
+                        ? l10n.kycWizardDateFormatError
+                        : !d.termsAgreed
+                            ? l10n.kycWizardTermsMissing
+                            : null;
     if (missing != null && mounted) AppFeedback.showError(context, missing);
     return missing == null;
-  }
-
-  /// Utility bill + extra docs: rear camera only (FG-17). The wizard
-  /// plan allows the gallery for CNIC front/back only; the bill and
-  /// extra documents are KYC evidence like the license, so they
-  /// follow the same camera-only rule (no gallery row).
-  Future<void> _pick(ValueSetter<XFile> set) async {
-    await MediaPickerHelper.showMediaSourceSheet(context: context, cameraOnly: true, onImageSelected: (file) { if (file == null || !mounted) return; setState(() => set(file)); widget.onChanged(); });
   }
 
   void _syncLicenseControllers() {
@@ -127,24 +114,6 @@ class Step3DocsState extends KycStepState<Step3Docs> {
     } finally {
       if (mounted) setState(() { if (front) { _scanningLicenseFront = false; } else { _scanningLicenseBack = false; } });
     }
-  }
-
-  Future<void> _confirmSignature() async {
-    if (_signatureController.isEmpty) {
-      AppFeedback.showError(context, AppLocalizations.of(context)!.kycWizardSignatureMissing);
-      return;
-    }
-    final bytes = await _signatureController.toPngBytes();
-    if (bytes == null || bytes.isEmpty || !mounted) return;
-    setState(() { widget.draft.signaturePng = bytes; _signed = true; });
-    widget.onChanged();
-  }
-
-  void _clearSignature() {
-    _signatureController.clear();
-    widget.draft.clearExisting('signatureUrl');
-    setState(() { widget.draft.signaturePng = null; _signed = false; });
-    widget.onChanged();
   }
 
   void _showTerms() {
@@ -190,51 +159,7 @@ class Step3DocsState extends KycStepState<Step3Docs> {
         _field(_licenseNumberController, l10n.kycWizardLicenseNumber, onChanged: (v) { draft.licenseNumber = v; widget.onChanged(); }),
         const SizedBox(height: 12),
         _field(_licenseExpiryController, l10n.kycWizardLicenseExpiry, hint: '01.01.2030', keyboard: TextInputType.number, formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)], onChanged: (v) { draft.licenseExpiry = v; widget.onChanged(); }),
-        const SizedBox(height: 20),
-        _section(l10n.kycWizardUtilityBill),
-        DocPhotoTile(label: l10n.kycWizardUtilityBill, file: draft.utilityBillPhoto, existingUrl: draft.existingUrlFor('utilityBillUrl'), buttonKey: const ValueKey('step3_bill'), onPick: () => _pick((f) => draft.utilityBillPhoto = f), onRemove: () { setState(() { draft.utilityBillPhoto = null; draft.clearExisting('utilityBillUrl'); }); widget.onChanged(); }, removeButtonKey: const ValueKey('step3_bill_remove')),
-        const SizedBox(height: 20),
-        _section(l10n.kycWizardExtraDocs),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (var i = 0; i < draft.extraPhotos.length; i++)
-              Stack(
-                children: [
-                  ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.file(File(draft.extraPhotos[i].path), width: 72, height: 72, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image_rounded))),
-                  // 48dp hit area (was a 20px icon) with the icon
-                  // centred in the top-right corner of the thumb.
-                  Positioned(right: 0, top: 0, child: SizedBox(width: 48, height: 48, child: IconButton(key: ValueKey('step3_extra_remove_$i'), padding: EdgeInsets.zero, tooltip: l10n.kycWizardRemoveImage, icon: const Icon(Icons.cancel_rounded, size: 24), onPressed: () { setState(() => draft.extraPhotos.removeAt(i)); widget.onChanged(); }))),
-                ],
-              ),
-            OutlinedButton.icon(key: const ValueKey('step3_extra_add'), onPressed: () => _pick((f) => draft.extraPhotos.add(f)), icon: const Icon(Icons.add_a_photo_rounded), label: Text(l10n.kycWizardAddPhoto)),
-          ],
-        ),
-        const SizedBox(height: 20),
-        _section(l10n.kycWizardSignature),
-        Container(
-          height: 120,
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Theme.of(context).dividerColor)),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: _signed && draft.signaturePng != null
-                ? Image.memory(draft.signaturePng!, fit: BoxFit.contain, errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image_rounded))
-                // Edit mode: the on-file signature (URL) when no
-                // fresh signature was drawn yet.
-                : _signed && draft.existingUrlFor('signatureUrl') != null
-                    ? Image.network(draft.existingUrlFor('signatureUrl')!, fit: BoxFit.contain, errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image_rounded))
-                    : Signature(controller: _signatureController, backgroundColor: Colors.white),
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            TextButton.icon(key: const ValueKey('step3_signature_clear'), onPressed: _clearSignature, icon: const Icon(Icons.clear_rounded, size: 16), label: Text(l10n.kycWizardSignatureClear)),
-            if (!_signed) ElevatedButton(key: const ValueKey('step3_signature_confirm'), onPressed: _confirmSignature, child: Text(l10n.commonConfirm)),
-          ],
-        ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
         CheckboxListTile(
           key: const ValueKey('step3_terms_checkbox'),
           value: draft.termsAgreed,

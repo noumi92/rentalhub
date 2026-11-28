@@ -13,35 +13,17 @@ import '../../../customer/domain/repositories/customer_repository.dart';
 import '../services/customer_detail_controller.dart';
 import '../services/kyc_slot_replace_service.dart';
 import '../widgets/customer_detail_actions.dart';
+import '../widgets/customer_detail_appbar_actions.dart';
 import '../widgets/customer_kyc_replace_handler.dart';
 import '../widgets/customer_reject_reason_dialog.dart';
 import 'customer_detail_body.dart';
 
-/// Owner-deck finish — the 1 missing screen (#35): a customer profile.
-/// Header (name, phone, CNIC), KYC status, documents/photo, rental
-/// history, total spent and blacklist state, plus owner Approve /
-/// Reject of the profile. The id is a saved-record id; a booking-only
-/// customer (no saved record) still resolves — by CNIC, then from
-/// their bookings — with an honest "no KYC record on file" state.
-/// Dues use the same definition as the dues screen: an approved /
-/// paid / active / completed booking with a remaining balance.
-///
-/// Walk-in CRM (2026-11-21): walk-in records are shop-managed —
-/// the header carries the shop status + derived chips (Active /
-/// Blocked / KYC Incomplete / Dormant / Frequent), the actions are
-/// Block/Unblock, Edit and Archive, and every KYC tile is
-/// replaceable in place. Online records keep Approve/Reject and
-/// gain Block/Unblock only (no Edit, no Archive, no KYC replace).
-/// Data + mutations live in [CustomerDetailController]; the scroll
-/// content in [CustomerDetailBody].
+/// Owner customer profile view. Data + mutations live in
+/// [CustomerDetailController]; scroll content in [CustomerDetailBody];
+/// Edit and Archive/Block actions live in the AppBar.
 class OwnerCustomerDetailView extends StatefulWidget {
   final String customerId;
   final String? shopId;
-
-  /// Test seams: the repository for status/KYC writes and the
-  /// KYC replace service. Production resolves both from the
-  /// locator (the replacer falls back to a fresh instance, whose
-  /// uploader comes from the locator).
   final CustomerRepository? repository;
   final KycSlotReplaceService? replacer;
 
@@ -182,11 +164,13 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
     }
   }
 
-  void _edit() {
+  void _edit({int initialStep = 0}) {
     final customer = _customer;
     if (customer == null) return;
+    final path = RouteNames.ownerCustomerEdit
+        .replaceFirst(':id', customer.customerId);
     context.push(
-      RouteNames.ownerCustomerEdit.replaceFirst(':id', customer.customerId),
+      initialStep > 0 ? '$path?step=$initialStep' : path,
       extra: customer,
     );
   }
@@ -215,7 +199,19 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
         top: false,
         child: Column(
           children: [
-            MinimalAppBar(title: l10n.customerDetailTitle, subtitle: customer?.name),
+            MinimalAppBar(
+              title: l10n.customerDetailTitle,
+              subtitle: customer?.name,
+              actions: buildCustomerDetailAppBarActions(
+                context: context,
+                customer: customer,
+                statusShopId: _statusShopId,
+                acting: _acting,
+                onEdit: _edit,
+                onArchive: _archive,
+                onToggleBlock: _toggleBlock,
+              ),
+            ),
             Expanded(
               child: _loading
                   ? AppLoadingState(message: l10n.customersLoadingMessage)
@@ -227,6 +223,7 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
                               onRefresh: _load,
                               child: CustomerDetailBody(
                                 customer: customer,
+                                guarantor: data.guarantor,
                                 bookings: data.bookings,
                                 blacklisted: data.blacklisted,
                                 shopId: _statusShopId,
@@ -235,6 +232,7 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
                                 onReject: _reject,
                                 onBlockToggle: _toggleBlock,
                                 onEdit: _edit,
+                                onEditGuarantor: () => _edit(initialStep: 2),
                                 onArchive: _archive,
                                 onReplaceSlot: _replaceSlot,
                                 onReload: _load,

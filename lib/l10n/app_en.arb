@@ -6391,5 +6391,32 @@
   "adminPackagesControlsComingSoon": "Plan changes and credit grants are coming soon during the initial launch phase.",
   "handoverSecurityAmountLabel": "Security Amount (Rs.)",
   "handoverWizardBalanceConfirmRequired": "Confirm balance received (or select Not yet) before continuing.",
-  "handoverWizardDepositConfirmRequired": "Confirm security deposit received (or set amount to 0) before continuing."
+  "handoverWizardDepositConfirmRequired": "Confirm security deposit received (or set amount to 0) before continuing.",
+  "customersProfileShort": "Profile",
+  "customerDetailOutstandingShort": "Outstanding",
+  "customerDetailAddKyc": "Add KYC",
+  "customerDetailKycIncompletePrompt": "KYC incomplete — upload CNIC & Driving License.",
+  "customerDetailGuarantorSection": "Guarantor Information",
+  "customerDetailNoGuarantor": "No guarantor added yet",
+  "customerDetailAddGuarantor": "Add Guarantor",
+  "customerDetailTapToUpload": "Tap to upload",
+  "customerDetailKycDocumentsTitle": "KYC Documents",
+  "customerDetailKycUploadedPill": "{uploaded} / {total} Uploaded",
+  "@customerDetailKycUploadedPill": {
+    "placeholders": {
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "guarantorModeExisting": "Existing Customer",
+  "guarantorModeManual": "Enter Details",
+  "guarantorNameLabel": "Guarantor Name",
+  "guarantorPhoneLabel": "Guarantor Phone",
+  "guarantorCnicLabel": "Guarantor CNIC",
+  "guarantorAddressLabel": "Guarantor Address",
+  "guarantorRelationLabel": "Relation"
 }

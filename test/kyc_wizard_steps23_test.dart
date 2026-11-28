@@ -7,7 +7,6 @@ import 'package:rentalhub/features/owner/presentation/views/add_customer/kyc_dra
 import 'package:rentalhub/features/owner/presentation/views/add_customer/step2_photo.dart';
 import 'package:rentalhub/features/owner/presentation/views/add_customer/step3_docs.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
-import 'package:signature/signature.dart';
 
 import 'test_helper.dart';
 
@@ -220,22 +219,11 @@ void main() {
       expect(mockPicker.lastCameraDevice, CameraDevice.rear);
     });
 
-    testWidgets('utility bill capture stores the photo', (tester) async {
-      final draft = KycDraft();
-      await pumpStep(tester, Step3Docs(draft: draft, onChanged: () {}));
-
-      await tapRearCamera(tester, const ValueKey('step3_bill'));
-
-      expect(draft.utilityBillPhoto, isNotNull);
-      expect(draft.hasUtilityBill, isTrue);
-    });
-
-    testWidgets('license and bill photos can be removed to retake them',
+    testWidgets('license photos can be removed to retake them',
         (tester) async {
       final draft = KycDraft()
         ..licenseFrontPhoto = XFile('test/assets/mock_lic_front.jpg')
-        ..licenseBackPhoto = XFile('test/assets/mock_lic_back.jpg')
-        ..utilityBillPhoto = XFile('test/assets/mock_bill.jpg');
+        ..licenseBackPhoto = XFile('test/assets/mock_lic_back.jpg');
       await pumpStep(tester, Step3Docs(draft: draft, onChanged: () {}));
 
       await tester.ensureVisible(
@@ -245,72 +233,6 @@ void main() {
       await tester.pumpAndSettle();
       expect(draft.licenseFrontPhoto, isNull);
       expect(draft.licenseBackPhoto, isNotNull);
-
-      await tester.ensureVisible(
-          find.byKey(const ValueKey('step3_bill_remove')));
-      await tester.tap(find.byKey(const ValueKey('step3_bill_remove')));
-      await tester.pumpAndSettle();
-      expect(draft.utilityBillPhoto, isNull);
-      expect(draft.hasUtilityBill, isFalse);
-    });
-
-    testWidgets('extra docs add then remove', (tester) async {
-      final draft = KycDraft();
-      await pumpStep(tester, Step3Docs(draft: draft, onChanged: () {}));
-
-      await tapRearCamera(tester, const ValueKey('step3_extra_add'));
-      expect(draft.extraPhotos.length, 1);
-
-      await tapRearCamera(tester, const ValueKey('step3_extra_add'));
-      expect(draft.extraPhotos.length, 2);
-
-      await tester.ensureVisible(find.byKey(const ValueKey('step3_extra_remove_0')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('step3_extra_remove_0')));
-      await tester.pumpAndSettle();
-      expect(draft.extraPhotos.length, 1);
-    });
-
-    testWidgets('signature Confirm stores PNG bytes', (tester) async {
-      final draft = KycDraft();
-      await pumpStep(tester, Step3Docs(draft: draft, onChanged: () {}));
-
-      expect(find.byType(Signature), findsOneWidget);
-      await tester.ensureVisible(find.byType(Signature));
-      await tester.pumpAndSettle();
-      await tester.drag(find.byType(Signature), const Offset(100, 5));
-      await tester.pump();
-
-      // toPngBytes rasterizes through the engine: real async work that
-      // only completes when the test binding runs real async, so give
-      // it a real delay inside runAsync after the tap.
-      await tester.ensureVisible(find.byKey(const ValueKey('step3_signature_confirm')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('step3_signature_confirm')));
-      await tester.runAsync(() async {
-        await Future.delayed(const Duration(milliseconds: 500));
-      });
-      await tester.pumpAndSettle();
-
-      expect(draft.signaturePng, isNotNull);
-      expect(draft.signaturePng!, isNotEmpty);
-      expect(draft.hasSignature, isTrue);
-      // Signed state: the pad is replaced by the saved signature.
-      expect(find.byKey(const ValueKey('step3_signature_confirm')), findsNothing);
-    });
-
-    testWidgets('signature Confirm with an empty pad stores nothing',
-        (tester) async {
-      final draft = KycDraft();
-      await pumpStep(tester, Step3Docs(draft: draft, onChanged: () {}));
-
-      await tester.ensureVisible(find.byKey(const ValueKey('step3_signature_confirm')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('step3_signature_confirm')));
-      await tester.pumpAndSettle();
-
-      expect(draft.signaturePng, isNull);
-      expect(draft.hasSignature, isFalse);
     });
 
     testWidgets('terms checkbox gates validate()', (tester) async {

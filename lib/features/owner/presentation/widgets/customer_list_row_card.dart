@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../customer/utils/customer_grouping.dart';
 import 'customer_list_card_header.dart';
 import 'customer_row_book_action.dart';
 
-/// Simple CRM customer card: identity header + 3 direct action buttons
-/// (Call, View Profile, Book a Car). Tapping the header navigates
-/// directly to the customer detail screen — no inline booking expand.
+/// Minimalist hairline CRM customer card: identity header + subtle 1px
+/// divider + 3 direct action buttons (Call, Profile, Book Car).
 class CustomerListRowCard extends StatelessWidget {
   const CustomerListRowCard({
     super.key,
@@ -29,9 +29,6 @@ class CustomerListRowCard extends StatelessWidget {
   final bool dormant;
   final bool expanded;
   final VoidCallback? onToggleExpand;
-
-  /// The last card carries no bottom margin — the list padding
-  /// (16 dp) is the bottom gap (BP-14).
   final bool isLast;
 
   String _profileId() {
@@ -48,8 +45,17 @@ class CustomerListRowCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = customer;
-    return Card(
-      margin: EdgeInsets.only(bottom: isLast ? 0 : 10),
+    final cs = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      margin: EdgeInsets.only(bottom: isLast ? 0 : 12),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? cs.outlineVariant : AppColors.borderSubtle,
+        ),
+      ),
       child: Column(
         children: [
           CustomerListCardHeader(
@@ -62,6 +68,13 @@ class CustomerListRowCard extends StatelessWidget {
             onTap: () => context.push(
               RouteNames.ownerCustomerDetail.replaceFirst(':id', _profileId()),
             ),
+          ),
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: isDark
+                ? cs.outlineVariant.withValues(alpha: 0.4)
+                : AppColors.borderSubtle.withValues(alpha: 0.7),
           ),
           CustomerRowBookAction(customer: c, blocked: blocked),
         ],

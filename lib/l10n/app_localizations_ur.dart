@@ -11315,4 +11315,58 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get handoverWizardDepositConfirmRequired =>
       'آگے بڑھنے سے پہلے سیکیورٹی رقم کی وصولی کی تصدیق کریں (یا رقم 0 درج کریں)۔';
+
+  @override
+  String get customersProfileShort => 'پروفائل';
+
+  @override
+  String get customerDetailOutstandingShort => 'بقایا';
+
+  @override
+  String get customerDetailAddKyc => 'دستاویزات شامل کریں';
+
+  @override
+  String get customerDetailKycIncompletePrompt =>
+      'کے وائی سی نامکمل ہے — شناختی کارڈ اور ڈرائیونگ لائسنس اپلوڈ کریں۔';
+
+  @override
+  String get customerDetailGuarantorSection => 'ضامن کی معلومات';
+
+  @override
+  String get customerDetailNoGuarantor => 'ابھی تک کوئی ضامن شامل نہیں کیا گیا';
+
+  @override
+  String get customerDetailAddGuarantor => 'ضامن شامل کریں';
+
+  @override
+  String get customerDetailTapToUpload => 'اپلوڈ کے لیے ٹیپ کریں';
+
+  @override
+  String get customerDetailKycDocumentsTitle => 'کے وائی سی دستاویزات';
+
+  @override
+  String customerDetailKycUploadedPill(int uploaded, int total) {
+    return '$uploaded / $total اپلوڈ شدہ';
+  }
+
+  @override
+  String get guarantorModeExisting => 'موجودہ صارف';
+
+  @override
+  String get guarantorModeManual => 'تفصیلات درج کریں';
+
+  @override
+  String get guarantorNameLabel => 'ضامن کا نام';
+
+  @override
+  String get guarantorPhoneLabel => 'ضامن کا فون';
+
+  @override
+  String get guarantorCnicLabel => 'ضامن کا شناختی کارڈ';
+
+  @override
+  String get guarantorAddressLabel => 'ضامن کا پتہ';
+
+  @override
+  String get guarantorRelationLabel => 'رشتہ';
 }

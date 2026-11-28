@@ -74,15 +74,11 @@ void main() {
       // The draft is complete, so the blue box shows before any pick.
       expect(find.text('KYC complete: CNIC, Photo, Thumb, License, Signature'),
           findsOneWidget);
+      // Switch to Existing Customer mode to test search & radio picker.
+      await tester.tap(find.text('Existing Customer'));
+      await tester.pumpAndSettle();
       expect(find.text('Guarantor One'), findsOneWidget);
       expect(find.text('Other Person'), findsOneWidget);
-      // No guarantor picked yet: no green on-file box, no relation
-      // value shown.
-      expect(
-          find.text(
-              'Signature & thumbprint on file — fetched automatically'),
-          findsNothing);
-      expect(find.text('Friend'), findsNothing);
 
       // Searching filters the list.
       await tester.enterText(
@@ -96,31 +92,20 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Other Person'), findsOneWidget);
 
-      // Picking the guarantor shows the relation dropdown (the
-      // draft's relation, 'Family' here) and — he has a signature
-      // on file — the green box.
       await tester.tap(find.text('Guarantor One'));
       await tester.pumpAndSettle();
       expect(draft.guarantorCustomerId, 'cust-kyc-g1');
+      expect(draft.guarantorName, 'Guarantor One');
       expect(find.text('Family'), findsOneWidget);
-      expect(
-          find.text(
-              'Signature & thumbprint on file — fetched automatically'),
-          findsOneWidget);
       expect(find.text('Guarantor is optional — you can save without one'),
           findsOneWidget);
 
-      // Tapping the selected guarantor again clears the pick.
       await tester.tap(find.text('Guarantor One'));
       await tester.pumpAndSettle();
       expect(draft.guarantorCustomerId, isNull);
-      expect(
-          find.text(
-              'Signature & thumbprint on file — fetched automatically'),
-          findsNothing);
     });
 
-    testWidgets('empty shop shows the honest empty state',
+    testWidgets('empty shop shows the honest empty state in existing mode',
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -137,6 +122,8 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Existing Customer'));
       await tester.pumpAndSettle();
       expect(find.text('No saved customers yet.'), findsOneWidget);
     });

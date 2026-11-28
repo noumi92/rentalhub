@@ -49,6 +49,8 @@ CustomerEntity _fullWalkIn({
       cnic: cnic,
       source: 'walk_in',
       createdAt: createdAt ?? DateTime.now().subtract(const Duration(days: 10)),
+      cnicFrontUrl: _face,
+      cnicBackUrl: _fingerL,
       profilePhotoUrl: _face,
       leftFingerprintUrl: _fingerL,
       rightFingerprintUrl: _fingerR,
@@ -162,14 +164,14 @@ void main() {
       );
     });
 
-    test('isKycCompleteForEntity needs the full slot set', () {
+    test('isKycCompleteForEntity needs all 4 CNIC & license slots', () {
       final full = _fullWalkIn(id: 'c-full', shopId: 'shop-1');
       expect(isKycCompleteForEntity(full), isTrue);
       expect(
         isKycCompleteForEntity(_fullWalkIn(
           id: 'c-nolic',
           shopId: 'shop-1',
-        ).copyWith(licenseNumber: '')),
+        ).copyWith(licenseFrontUrl: '')),
         isFalse,
       );
     });
@@ -211,7 +213,7 @@ void main() {
   });
 
   group('detail actions by source', () {
-    testWidgets('walk-in shows Block/Edit/Archive, no Approve/Reject',
+    testWidgets('walk-in shows AppBar Edit & overflow menu, no Approve/Reject',
         (tester) async {
       final ds = await customers();
       await ds.upsertCustomer(CustomerEntity(
@@ -225,14 +227,18 @@ void main() {
       await pumpDetail(tester,
           customerId: 'cust-crm-w1', shopId: 'shop-crm-1');
 
-      expect(find.text('Block'), findsOneWidget);
-      expect(find.text('Edit'), findsOneWidget);
-      expect(find.text('Archive'), findsOneWidget);
+      expect(find.byKey(const ValueKey('customer_detail_appbar_edit')),
+          findsOneWidget);
+      expect(find.byKey(const ValueKey('customer_detail_appbar_menu')),
+          findsOneWidget);
       expect(find.text('Approve profile'), findsNothing);
       expect(find.text('Reject profile'), findsNothing);
-      // Derived chips: active + KYC incomplete (no media on file).
       expect(find.text('Active'), findsOneWidget);
       expect(find.text('KYC Incomplete'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('customer_detail_appbar_menu')));
+      await tester.pumpAndSettle();
+      expect(find.text('Archive'), findsOneWidget);
+      expect(find.text('Block'), findsOneWidget);
     });
 
     testWidgets('online keeps Approve/Reject + Block, no Edit/Archive',
@@ -301,7 +307,8 @@ void main() {
       await pumpDetail(tester,
           customerId: 'cust-crm-b1', shopId: 'shop-crm-3');
 
-      await tester.ensureVisible(find.text('Block'));
+      await tester.tap(find.byKey(const ValueKey('customer_detail_appbar_menu')));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Block'));
       await tester.pumpAndSettle();
 
@@ -310,27 +317,20 @@ void main() {
           find.text(
               'This customer is blocked for this shop. They cannot make new bookings.'),
           findsOneWidget);
-      expect(find.text('Unblock'), findsOneWidget);
       final stored = await ds.getCustomerById('cust-crm-b1');
       expect(stored?.statusForShop('shop-crm-3'), 'blocked');
-      // The other shops' entries (none) are untouched and the
-      // record itself was never deleted.
       expect(stored?.name, 'Ayesha Khan');
 
-      await tester.ensureVisible(find.text('Unblock'));
-      // The Block success SnackBar sits over the bottom action row
-      // until it dismisses; let it clear (and the button debounce
-      // expire) before tapping Unblock, or the tap lands on the
-      // SnackBar instead. The long pump fires the SnackBar timer;
-      // the settle runs the removal frame after it.
       await tester.pump(const Duration(seconds: 5));
       await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('customer_detail_appbar_menu')));
+      await tester.pumpAndSettle();
+      expect(find.text('Unblock'), findsOneWidget);
       await tester.tap(find.text('Unblock'));
       await tester.pumpAndSettle();
 
       expect(find.text('Active'), findsOneWidget);
       expect(find.text('Blocked'), findsNothing);
-      expect(find.text('Unblock'), findsNothing);
       final restored = await ds.getCustomerById('cust-crm-b1');
       expect(restored?.statusForShop('shop-crm-3'), 'active');
     });
@@ -343,17 +343,18 @@ void main() {
       await pumpDetail(tester,
           customerId: 'cust-crm-a1', shopId: 'shop-crm-4');
 
-      await tester.ensureVisible(find.text('Archive'));
+      await tester.tap(find.byKey(const ValueKey('customer_detail_appbar_menu')));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Archive'));
       await tester.pumpAndSettle();
       expect(find.text('Archive customer?'), findsOneWidget);
 
-      // Cancel keeps the customer active.
       await tester.tap(find.byKey(const ValueKey('customer_archive_cancel')));
       await tester.pumpAndSettle();
       expect(find.text('Active'), findsOneWidget);
 
-      await tester.ensureVisible(find.text('Archive'));
+      await tester.tap(find.byKey(const ValueKey('customer_detail_appbar_menu')));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Archive'));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('customer_archive_confirm')));
@@ -364,17 +365,15 @@ void main() {
           find.text(
               'This customer is archived. Their record and history are kept.'),
           findsOneWidget);
-      expect(find.text('Restore'), findsOneWidget);
-      expect(find.text('Archive'), findsNothing);
       final stored = await ds.getCustomerById('cust-crm-a1');
       expect(stored?.statusForShop('shop-crm-4'), 'archived');
 
-      // Restore brings the customer back to active.
-      await tester.ensureVisible(find.text('Restore'));
-      // Same SnackBar-over-action-row wait as the Unblock tap
-      // above (the 'Customer archived' SnackBar).
       await tester.pump(const Duration(seconds: 5));
       await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('customer_detail_appbar_menu')));
+      await tester.pumpAndSettle();
+      expect(find.text('Restore'), findsOneWidget);
+      expect(find.text('Archive'), findsNothing);
       await tester.tap(find.text('Restore'));
       await tester.pumpAndSettle();
       expect(find.text('Active'), findsOneWidget);
@@ -452,8 +451,6 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Next'));
-      await tester.pumpAndSettle();
       expect(find.text('Save changes'), findsOneWidget);
       await tester.tap(find.text('Save changes'));
       await tester.pumpAndSettle();
@@ -512,17 +509,19 @@ void main() {
           shopId: 'shop-crm-7',
           replacer: replacer);
 
+      await tester.ensureVisible(
+          find.byKey(const ValueKey('customer_detail_tab_2')));
       await tester.tap(find.byKey(const ValueKey('customer_detail_tab_2')));
       await tester.pumpAndSettle();
       await tester.ensureVisible(
-          find.byKey(const ValueKey('kyc_replace_profilePhotoUrl')));
+          find.byKey(const ValueKey('kyc_replace_licenseFrontUrl')));
       await tester.tap(
-          find.byKey(const ValueKey('kyc_replace_profilePhotoUrl')));
+          find.byKey(const ValueKey('kyc_replace_licenseFrontUrl')));
       await tester.pumpAndSettle();
 
-      expect(replacer.lastField, 'profilePhotoUrl');
+      expect(replacer.lastField, 'licenseFrontUrl');
       final stored = await ds.getCustomerById('cust-crm-r1');
-      expect(stored?.profilePhotoUrl, 'https://cdn.example/kyc/replaced.jpg');
+      expect(stored?.licenseFrontUrl, 'https://cdn.example/kyc/replaced.jpg');
       // The CNIC number (record key) is untouched by a replace.
       expect(stored?.cnic, '35202-9999999-9');
     });

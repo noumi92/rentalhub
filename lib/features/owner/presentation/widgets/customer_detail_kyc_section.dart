@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
 import 'customer_detail_docs.dart';
 import 'customer_kyc_slots.dart';
 
-/// Showroom redesign Phase 3 — the KYC section of the customer
-/// profile: one header carrying the REAL uploaded count
-/// (`customerDetailKycDocumentsCount`, e.g. "KYC Documents (3/11
-/// Uploaded)") above the 3-column document grid. The old boolean
-/// `hasKyc` ("documents on file" / "no record") is replaced by the
-/// count — see [kycUploadedCount].
-///
-/// Walk-in CRM: [onReplaceSlot] (walk-in only) makes every tile
-/// tappable — tapping recaptures that one slot. Without it the
-/// grid stays display-only.
+/// Minimalist KYC Documents tab section: header with uploaded count pill
+/// (`X / 4 Uploaded`), sleek 4px rounded progress bar, and the 2×2 dashed
+/// upload grid for CNIC & Driving License only.
 class CustomerDetailKycSection extends StatelessWidget {
   const CustomerDetailKycSection({
     super.key,
@@ -23,26 +17,65 @@ class CustomerDetailKycSection extends StatelessWidget {
   });
 
   final CustomerEntity customer;
-
-  /// Field name of the tapped slot (see [kycDocSlots]), or null
-  /// to keep the grid display-only (online customers).
   final ValueChanged<String>? onReplaceSlot;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+    final brightness = Theme.of(context).brightness;
+    final uploaded = kycUploadedCount(customer);
+    final progress = kycTotalSlots == 0 ? 0.0 : uploaded / kycTotalSlots;
+    final complete = uploaded >= kycTotalSlots;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.customerDetailKycDocumentsCount(
-              kycUploadedCount(customer), kycTotalSlots),
-          style: Theme.of(context)
-              .textTheme
-              .titleMedium
-              ?.copyWith(fontWeight: FontWeight.w600),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                l10n.customerDetailKycDocumentsTitle,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: complete
+                    ? AppColors.successBadgeFor(brightness)
+                    : cs.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                l10n.customerDetailKycUploadedPill(uploaded, kycTotalSlots),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                      color: complete
+                          ? AppColors.successBadgeTextFor(brightness)
+                          : cs.onSurfaceVariant,
+                    ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: LinearProgressIndicator(
+            value: progress,
+            minHeight: 4,
+            backgroundColor: cs.surfaceContainerHighest,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              complete ? AppColors.accentSuccessStrong : AppColors.orangeFill,
+            ),
+          ),
+        ),
+        const SizedBox(height: 14),
         CustomerDetailDocs(customer: customer, onReplaceSlot: onReplaceSlot),
       ],
     );

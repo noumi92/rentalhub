@@ -38,6 +38,10 @@ class KycDraft {
     licenseExpiry = entity.licenseExpiry ?? '';
     guarantorCustomerId = entity.guarantorCustomerId;
     guarantorRelation = entity.guarantorRelation ?? 'Friend';
+    guarantorName = entity.guarantorName ?? '';
+    guarantorPhone = entity.guarantorPhone ?? '';
+    guarantorCnic = entity.guarantorCnic ?? '';
+    guarantorAddress = entity.guarantorAddress ?? '';
     termsAgreed = true;
     final urls = <String, String?>{
       'profilePhotoUrl': entity.profilePhotoUrl,
@@ -95,9 +99,13 @@ class KycDraft {
   String licenseNumber = '';
   String licenseExpiry = '';
 
-  // Step 4 — guarantor (optional).
+  // Step 3 — guarantor (optional: existing customer OR inline details).
   String? guarantorCustomerId;
   String guarantorRelation = 'Friend';
+  String guarantorName = '';
+  String guarantorPhone = '';
+  String guarantorCnic = '';
+  String guarantorAddress = '';
 
   // Media, picked with the camera/gallery. Null = not captured yet.
   XFile? cnicFrontPhoto;
@@ -172,21 +180,21 @@ class KycDraft {
       (signaturePng != null && signaturePng!.isNotEmpty) ||
       existingUrls.containsKey('signatureUrl');
 
-  /// Step-4 completeness box (spec O15): CNIC, Photo, Fingerprints,
-  /// License, Signature. Guarantor is not listed — it is optional.
-  /// Fingerprints means both hand photos captured (left + right,
-  /// 4 fingers each); the old single thumbprint photo is no longer
-  /// captured in step 2.
+  bool get hasCnicFront =>
+      cnicFrontPhoto != null || existingUrls.containsKey('cnicFrontUrl');
+  bool get hasCnicBack =>
+      cnicBackPhoto != null || existingUrls.containsKey('cnicBackUrl');
+  bool get hasGuarantor =>
+      (guarantorCustomerId != null && guarantorCustomerId!.trim().isNotEmpty) ||
+      guarantorName.trim().isNotEmpty;
+
+  /// KYC completeness: strictly CNIC (front + back) & Driving License
+  /// (front + back) + customer name & CNIC number. Guarantor is optional.
   bool get isKycComplete =>
       cnic.trim().isNotEmpty &&
       name.trim().isNotEmpty &&
-      hasFacePhoto &&
-      hasLeftFingerprints &&
-      hasRightFingerprints &&
+      hasCnicFront &&
+      hasCnicBack &&
       hasLicenseFront &&
-      hasLicenseBack &&
-      licenseNumber.trim().isNotEmpty &&
-      hasUtilityBill &&
-      hasSignature &&
-      termsAgreed;
+      hasLicenseBack;
 }

@@ -84,59 +84,44 @@ void main() {
         home: Scaffold(body: child),
       );
 
-  group('Phase 3 — KYC slots (11 tracked)', () {
-    test('the slot list has exactly 11 entries with distinct labels', () {
-      expect(kycTotalSlots, 11);
+  group('Phase 3 — KYC slots (4 tracked: CNIC & Driving License)', () {
+    test('the slot list has exactly 4 entries with distinct labels', () {
+      expect(kycTotalSlots, 4);
       final slots = kycDocSlots(l10n, customer());
-      expect(slots, hasLength(11));
-      expect(slots.map((s) => s.label).toSet(), hasLength(11));
+      expect(slots, hasLength(4));
+      expect(slots.map((s) => s.label).toSet(), hasLength(4));
       for (final slot in slots) {
         expect(slot.label, isNotEmpty);
       }
-      // The new finger labels come from the Phase 0 keys.
-      expect(slots[2].label, l10n.kycLeftFourFingers);
-      expect(slots[3].label, l10n.kycRightFourFingers);
+      expect(slots[0].label, l10n.customerDetailCnicFront);
+      expect(slots[1].label, l10n.customerDetailCnicBack);
+      expect(slots[2].label, l10n.customerDetailLicenseFront);
+      expect(slots[3].label, l10n.customerDetailLicenseBack);
     });
 
-    test('empty record counts 0/11', () {
+    test('empty record counts 0/4', () {
       expect(kycUploadedCount(customer()), 0);
     });
 
-    test('full record counts 11/11', () {
+    test('full record counts 4/4', () {
       const url = 'https://example.invalid/kyc/file.jpg';
       final full = customer(
-        profilePhotoUrl: url,
-        thumbprintUrl: url,
-        leftFingerprintUrl: url,
-        rightFingerprintUrl: url,
         cnicFrontUrl: url,
         cnicBackUrl: url,
         licenseFrontUrl: url,
         licenseBackUrl: url,
-        utilityBillUrl: url,
-        extraDocumentUrls: const [url],
-        signatureUrl: url,
       );
-      expect(kycUploadedCount(full), 11);
+      expect(kycUploadedCount(full), 4);
     });
 
-    test('partial record counts only uploaded slots; empty strings do not count', () {
+    test('partial record counts only uploaded CNIC/license slots; empty strings do not count', () {
       final partial = customer(
         profilePhotoUrl: 'https://example.invalid/kyc/face.jpg',
         cnicFrontUrl: '',
+        cnicBackUrl: 'https://example.invalid/kyc/cnic-back.jpg',
         licenseFrontUrl: 'https://example.invalid/kyc/lic.jpg',
-        extraDocumentUrls: const ['https://example.invalid/kyc/extra.jpg'],
       );
-      // Face + license front + extra documents (one slot) = 3.
-      expect(kycUploadedCount(partial), 3);
-      // Extra documents is a single slot however many files it holds.
-      final manyExtras = customer(
-        extraDocumentUrls: const [
-          'https://example.invalid/kyc/e1.jpg',
-          'https://example.invalid/kyc/e2.jpg',
-        ],
-      );
-      expect(kycUploadedCount(manyExtras), 1);
+      expect(kycUploadedCount(partial), 2);
     });
   });
 
@@ -179,28 +164,22 @@ void main() {
   });
 
   group('Phase 3 — KYC section', () {
-    testWidgets('header shows the real uploaded count out of 11',
+    testWidgets('header shows the real uploaded count out of 4',
         (tester) async {
       const url = 'https://example.invalid/kyc/file.jpg';
-      final three = customer(
-        profilePhotoUrl: url,
+      final two = customer(
         cnicFrontUrl: url,
-        signatureUrl: url,
+        licenseFrontUrl: url,
       );
       await tester.pumpWidget(wrap(SizedBox(
           width: 360,
           child: SingleChildScrollView(
-              child: CustomerDetailKycSection(customer: three)))));
-      // Network thumbnails fail in tests (HttpClient returns 400)
-      // and fall back via errorBuilder, so every tile shows
-      // "Not provided" here — the uploaded/missing distinction is
-      // proven by the kycUploadedCount unit tests above.
+              child: CustomerDetailKycSection(customer: two)))));
       await tester.pumpAndSettle();
-      expect(find.text(l10n.customerDetailKycDocumentsCount(3, 11)),
+      expect(find.text(l10n.customerDetailKycUploadedPill(2, 4)),
           findsOneWidget);
       expect(find.text(l10n.customerDetailNoDocument), findsWidgets);
-      // All 11 slot labels render in the grid.
-      for (final slot in kycDocSlots(l10n, three)) {
+      for (final slot in kycDocSlots(l10n, two)) {
         expect(find.text(slot.label), findsOneWidget);
       }
     });
@@ -237,7 +216,7 @@ void main() {
   });
 
   group('Phase 3 — expanded row actions', () {
-    testWidgets('Call + View Profile + solid Book a Car in a 48px row',
+    testWidgets('Call + Profile + solid Book a Car in a 48px row',
         (tester) async {
       final summary = CustomerSummary(
         key: 'cnic:3520212345671',
@@ -251,18 +230,15 @@ void main() {
       await tester.pumpWidget(
           wrap(CustomerRowBookAction(customer: summary)));
       await tester.pump();
-      expect(find.byIcon(Icons.call_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.call_outlined), findsOneWidget);
       expect(find.byTooltip(l10n.call), findsOneWidget);
-      expect(find.text(l10n.customersViewProfile), findsOneWidget);
+      expect(find.text(l10n.customersProfileShort), findsOneWidget);
       expect(find.text(l10n.quickBookCar), findsOneWidget);
-      // The row itself is 48 px high (rulebook §4.6 minimum touch
-      // target); the widget adds 12 px bottom padding around it.
       final rowBox = tester.getSize(find.byWidgetPredicate(
           (w) => w is SizedBox && w.height == 48 && w.width == null));
       expect(rowBox.height, 48);
-      // Call is enabled when a phone number exists.
       final callButton = tester.widget<OutlinedButton>(find.ancestor(
-          of: find.byIcon(Icons.call_rounded),
+          of: find.byIcon(Icons.call_outlined),
           matching: find.byType(OutlinedButton)));
       expect(callButton.onPressed, isNotNull);
     });
@@ -280,42 +256,59 @@ void main() {
           wrap(const CustomerRowBookAction(customer: summary)));
       await tester.pump();
       final callButton = tester.widget<OutlinedButton>(find.ancestor(
-          of: find.byIcon(Icons.call_rounded),
+          of: find.byIcon(Icons.call_outlined),
           matching: find.byType(OutlinedButton)));
       expect(callButton.onPressed, isNull);
     });
   });
 
   group('Phase 3 — detail header', () {
-    testWidgets('rejected profile merges reason + KYC status in one alert',
+    testWidgets('rejected online profile shows reason and actionable Add KYC',
         (tester) async {
       final rejected = customer(
         approvalStatus: 'rejected',
         rejectionReason: 'CNIC photo unreadable',
-      );
-      await tester.pumpWidget(wrap(
-          CustomerDetailHeader(customer: rejected, blacklisted: false, shopStatus: 'active', kycIncomplete: true, dormant: false, frequent: false)));
+      ).copyWith(source: 'online');
+      await tester.pumpWidget(wrap(CustomerDetailHeader(
+        customer: rejected,
+        blacklisted: false,
+        shopStatus: 'active',
+        kycIncomplete: true,
+        dormant: false,
+        frequent: false,
+        onAddKyc: () {},
+      )));
       await tester.pump();
-      // Slim identity: phone + CNIC on one line.
       expect(find.text('0300-1234567 • 35202-1234567-1'), findsOneWidget);
       expect(find.text(l10n.statusRejected), findsOneWidget);
-      expect(find.text(l10n.customerDetailNotBlacklisted), findsOneWidget);
       expect(find.text('CNIC photo unreadable'), findsOneWidget);
-      expect(find.text(l10n.customerDetailKycNotOnFile), findsOneWidget);
+      expect(find.byKey(const ValueKey('customer_detail_add_kyc_btn')),
+          findsOneWidget);
     });
 
-    testWidgets('approved profile with KYC on file shows no alert banner',
+    testWidgets('approved profile with complete KYC shows no alert banner',
         (tester) async {
+      const url = 'https://example.invalid/kyc/doc.jpg';
       final ok = customer(
         approvalStatus: 'approved',
-        profilePhotoUrl: 'https://example.invalid/kyc/face.jpg',
-      );
-      await tester.pumpWidget(
-          wrap(CustomerDetailHeader(customer: ok, blacklisted: false, shopStatus: 'active', kycIncomplete: true, dormant: false, frequent: false)));
+        cnicFrontUrl: url,
+        cnicBackUrl: url,
+        licenseFrontUrl: url,
+        licenseBackUrl: url,
+      ).copyWith(source: 'online');
+      await tester.pumpWidget(wrap(CustomerDetailHeader(
+        customer: ok,
+        blacklisted: false,
+        shopStatus: 'active',
+        kycIncomplete: false,
+        dormant: false,
+        frequent: false,
+      )));
       await tester.pump();
       expect(find.text(l10n.statusApproved), findsOneWidget);
       expect(find.text(l10n.customerDetailKycNotOnFile), findsNothing);
-      expect(find.text(l10n.customerDetailKycOnFile), findsNothing);
+      expect(find.byKey(const ValueKey('customer_detail_add_kyc_btn')),
+          findsNothing);
     });
   });
 }

@@ -6391,5 +6391,32 @@
   "adminPackagesControlsComingSoon": "ابتدائی لانچ کے مرحلے میں پلان تبدیلی اور کریڈٹ الاٹمنٹ جلد آ رہے ہیں۔",
   "handoverSecurityAmountLabel": "سیکیورٹی رقم (روپے)",
   "handoverWizardBalanceConfirmRequired": "آگے بڑھنے سے پہلے بقایا رقم کی وصولی کی تصدیق کریں (یا ابھی نہیں منتخب کریں)۔",
-  "handoverWizardDepositConfirmRequired": "آگے بڑھنے سے پہلے سیکیورٹی رقم کی وصولی کی تصدیق کریں (یا رقم 0 درج کریں)۔"
+  "handoverWizardDepositConfirmRequired": "آگے بڑھنے سے پہلے سیکیورٹی رقم کی وصولی کی تصدیق کریں (یا رقم 0 درج کریں)۔",
+  "customersProfileShort": "پروفائل",
+  "customerDetailOutstandingShort": "بقایا",
+  "customerDetailAddKyc": "دستاویزات شامل کریں",
+  "customerDetailKycIncompletePrompt": "کے وائی سی نامکمل ہے — شناختی کارڈ اور ڈرائیونگ لائسنس اپلوڈ کریں۔",
+  "customerDetailGuarantorSection": "ضامن کی معلومات",
+  "customerDetailNoGuarantor": "ابھی تک کوئی ضامن شامل نہیں کیا گیا",
+  "customerDetailAddGuarantor": "ضامن شامل کریں",
+  "customerDetailTapToUpload": "اپلوڈ کے لیے ٹیپ کریں",
+  "customerDetailKycDocumentsTitle": "کے وائی سی دستاویزات",
+  "customerDetailKycUploadedPill": "{uploaded} / {total} اپلوڈ شدہ",
+  "@customerDetailKycUploadedPill": {
+    "placeholders": {
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "guarantorModeExisting": "موجودہ صارف",
+  "guarantorModeManual": "تفصیلات درج کریں",
+  "guarantorNameLabel": "ضامن کا نام",
+  "guarantorPhoneLabel": "ضامن کا فون",
+  "guarantorCnicLabel": "ضامن کا شناختی کارڈ",
+  "guarantorAddressLabel": "ضامن کا پتہ",
+  "guarantorRelationLabel": "رشتہ"
 }

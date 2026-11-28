@@ -94,18 +94,14 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Ayesha Khan'), findsWidgets);
-      // Phase 3: phone + CNIC share one line in the slim identity card.
       expect(find.text('0300-1111111 • 35202-1111111-1'), findsOneWidget);
       expect(find.text('Rs. 20,500'), findsOneWidget);
-      expect(find.text('Pending review'), findsOneWidget);
-      expect(find.text('Not blacklisted'), findsOneWidget);
-      // Walk-in CRM: a walk-in record is shop-managed — Block /
-      // Edit / Archive, never Approve / Reject (those are for
-      // online records, approved by the super admin).
+      // Walk-in CRM: shop-managed Active badge, Edit + overflow menu in AppBar.
       expect(find.text('Active'), findsOneWidget);
-      expect(find.text('Block'), findsOneWidget);
-      expect(find.text('Edit'), findsOneWidget);
-      expect(find.text('Archive'), findsOneWidget);
+      expect(find.byKey(const ValueKey('customer_detail_appbar_edit')),
+          findsOneWidget);
+      expect(find.byKey(const ValueKey('customer_detail_appbar_menu')),
+          findsOneWidget);
       expect(find.text('Approve profile'), findsNothing);
       expect(find.text('Reject profile'), findsNothing);
     });
@@ -391,10 +387,10 @@ void main() {
       expect(find.text('New Nadia'), findsNothing);
       expect(find.text('Due Daniyal'), findsOneWidget);
 
-      // Simple customer rows show View Profile & Book a Car directly.
+      // Simple customer rows show Profile & Book a Car directly.
       await tester.tap(find.textContaining('All ('));
       await tester.pumpAndSettle();
-      expect(find.text('View Profile'), findsNWidgets(3));
+      expect(find.text('Profile'), findsNWidgets(3));
       expect(find.text('Book a Car'), findsNWidgets(3));
     });
   });

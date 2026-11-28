@@ -25,9 +25,9 @@ class KycStepperHeader extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (var i = 0; i < 4; i++) ...[
+          for (var i = 0; i < labels.length; i++) ...[
             Expanded(child: _stepItem(context, i, labels[i])),
-            if (i < 3) _stepConnector(context, i),
+            if (i < labels.length - 1) _stepConnector(context, i),
           ],
         ],
       ),

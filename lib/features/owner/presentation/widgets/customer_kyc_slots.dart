@@ -28,53 +28,48 @@ import '../../../customer/domain/entities/customer_entity.dart';
 /// face, both finger photos, both license photos, license number,
 /// utility bill, signature and terms. The grid still shows all 11
 /// tracked slots — a complete record can legitimately read 9/11.
-const int kycTotalSlots = 11;
+/// Owner Customers KYC document slots — strictly CNIC & Driving License
+/// (4 slots total: CNIC Front, CNIC Back, Driving License Front,
+/// Driving License Back).
+const int kycTotalSlots = 4;
 
 bool _has(String? url) => url != null && url.isNotEmpty;
 
-/// Ordered (field, label, url) triples for the 11 tracked slots.
-/// [field] is the [CustomerEntity] field name (used by KYC replace
-/// to write back exactly one slot). Extra documents shows the first
-/// extra file (if any); the slot counts as uploaded when the list
-/// is non-empty.
+/// Ordered (field, label, url) triples for the 4 tracked KYC slots.
 List<({String field, String label, String? url})> kycDocSlots(
   AppLocalizations l10n,
   CustomerEntity customer,
-) => [
-  (field: 'profilePhotoUrl', label: l10n.customerDetailProfilePhoto, url: customer.profilePhotoUrl),
-  (field: 'thumbprintUrl', label: l10n.kycWizardThumbprint, url: customer.thumbprintUrl),
-  (field: 'leftFingerprintUrl', label: l10n.kycLeftFourFingers, url: customer.leftFingerprintUrl),
-  (field: 'rightFingerprintUrl', label: l10n.kycRightFourFingers, url: customer.rightFingerprintUrl),
-  (field: 'cnicFrontUrl', label: l10n.customerDetailCnicFront, url: customer.cnicFrontUrl),
-  (field: 'cnicBackUrl', label: l10n.customerDetailCnicBack, url: customer.cnicBackUrl),
-  (field: 'licenseFrontUrl', label: l10n.customerDetailLicenseFront, url: customer.licenseFrontUrl),
-  (field: 'licenseBackUrl', label: l10n.customerDetailLicenseBack, url: customer.licenseBackUrl),
-  (field: 'utilityBillUrl', label: l10n.kycWizardUtilityBill, url: customer.utilityBillUrl),
-  (
-    field: 'extraDocumentUrls',
-    label: l10n.kycWizardExtraDocs,
-    url: customer.extraDocumentUrls.isEmpty
-        ? null
-        : customer.extraDocumentUrls.first,
-  ),
-  (field: 'signatureUrl', label: l10n.customerDetailSignature, url: customer.signatureUrl),
-];
+) =>
+    [
+      (
+        field: 'cnicFrontUrl',
+        label: l10n.customerDetailCnicFront,
+        url: customer.cnicFrontUrl
+      ),
+      (
+        field: 'cnicBackUrl',
+        label: l10n.customerDetailCnicBack,
+        url: customer.cnicBackUrl
+      ),
+      (
+        field: 'licenseFrontUrl',
+        label: l10n.customerDetailLicenseFront,
+        url: customer.licenseFrontUrl
+      ),
+      (
+        field: 'licenseBackUrl',
+        label: l10n.customerDetailLicenseBack,
+        url: customer.licenseBackUrl
+      ),
+    ];
 
-/// Walk-in CRM: the derived KYC-completeness check for a SAVED
-/// record (the detail-screen "KYC Incomplete" chip). Same slot
-/// list as [KycDraft.isKycComplete] — face + both finger photos +
-/// both license photos + license number + utility bill + signature
-/// — but read off the stored URLs, so no draft, CNIC/name or terms
-/// check is involved (those are wizard concerns, not record state).
+/// KYC completeness for a saved customer record: CNIC Front + Back
+/// and Driving License Front + Back.
 bool isKycCompleteForEntity(CustomerEntity customer) {
-  return _has(customer.profilePhotoUrl) &&
-      _has(customer.leftFingerprintUrl) &&
-      _has(customer.rightFingerprintUrl) &&
+  return _has(customer.cnicFrontUrl) &&
+      _has(customer.cnicBackUrl) &&
       _has(customer.licenseFrontUrl) &&
-      _has(customer.licenseBackUrl) &&
-      (customer.licenseNumber ?? '').trim().isNotEmpty &&
-      _has(customer.utilityBillUrl) &&
-      _has(customer.signatureUrl);
+      _has(customer.licenseBackUrl);
 }
 
 /// Walk-in CRM (KYC replace): the customer with exactly one slot
@@ -118,25 +113,14 @@ CustomerEntity customerWithSlotUrl(
   }
 }
 
-/// How many of the 11 tracked slots have a file on the record. An
-/// empty-string URL counts as missing, same as null. Computed
-/// straight from the entity fields (no labels needed) so unit tests
-/// can call it without a widget pump.
+/// How many of the 4 tracked CNIC & Driving License slots have a file on the
+/// record. An empty-string URL counts as missing, same as null.
 int kycUploadedCount(CustomerEntity customer) {
   final urls = <String?>[
-    customer.profilePhotoUrl,
-    customer.thumbprintUrl,
-    customer.leftFingerprintUrl,
-    customer.rightFingerprintUrl,
     customer.cnicFrontUrl,
     customer.cnicBackUrl,
     customer.licenseFrontUrl,
     customer.licenseBackUrl,
-    customer.utilityBillUrl,
-    customer.extraDocumentUrls.isEmpty
-        ? null
-        : customer.extraDocumentUrls.first,
-    customer.signatureUrl,
   ];
   assert(urls.length == kycTotalSlots);
   return urls.where(_has).length;

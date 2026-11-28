@@ -1265,6 +1265,9 @@ class AppRouter {
                 builder: (context, state) => OwnerEditCustomerLoader(
                   customerId: state.pathParameters['id']!,
                   customer: state.extra as CustomerEntity?,
+                  initialStep: int.tryParse(
+                          state.uri.queryParameters['step'] ?? '') ??
+                      0,
                 ),
               ),
               // Customers: ownerCustomerSecurityWallet (Worker C) —

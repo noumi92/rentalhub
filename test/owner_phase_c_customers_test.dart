@@ -12,7 +12,7 @@ import 'package:rentalhub/features/customer/data/datasources/customer_remote_dat
 import 'package:rentalhub/features/customer/data/models/customer_model.dart';
 import 'package:rentalhub/features/customer/domain/entities/customer_entity.dart';
 import 'package:rentalhub/features/customer/utils/customer_grouping.dart';
-import 'package:rentalhub/features/owner/presentation/views/add_customer/step2_photo.dart';
+import 'package:rentalhub/features/owner/presentation/views/add_customer/step3_docs.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_add_customer_wizard.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_blacklist_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_cnic_review_view.dart';
@@ -240,7 +240,7 @@ House 12, Street 4, Gulberg III, Lahore
       await tester.pumpAndSettle();
       expect(find.text('Muhammad Ahmed'), findsOneWidget);
       expect(find.textContaining('Rs. 20,500 • 2 bookings'), findsOneWidget);
-      expect(find.text('View Profile'), findsOneWidget);
+      expect(find.text('Profile'), findsOneWidget);
       expect(find.text('Book a Car'), findsOneWidget);
     });
   });
@@ -519,7 +519,7 @@ House 12, Street 4, Gulberg III, Lahore
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
       expect(find.text('Add Customer'), findsOneWidget);
-      expect(find.byType(Step2Photo), findsNothing);
+      expect(find.byType(Step3Docs), findsNothing);
       expect(
         await di.sl<CustomerRemoteDataSource>()
             .getCustomerByCnic('shop-1', cnic),
@@ -540,8 +540,8 @@ House 12, Street 4, Gulberg III, Lahore
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      // Step 2: live photo.
-      expect(find.byType(Step2Photo), findsOneWidget);
+      // Step 2: driving license.
+      expect(find.byType(Step3Docs), findsOneWidget);
     });
 
     testWidgets('a clean scan proceeds to Add Customer, not to booking',

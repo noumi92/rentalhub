@@ -20068,6 +20068,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confirm security deposit received (or set amount to 0) before continuing.'**
   String get handoverWizardDepositConfirmRequired;
+
+  /// No description provided for @customersProfileShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get customersProfileShort;
+
+  /// No description provided for @customerDetailOutstandingShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Outstanding'**
+  String get customerDetailOutstandingShort;
+
+  /// No description provided for @customerDetailAddKyc.
+  ///
+  /// In en, this message translates to:
+  /// **'Add KYC'**
+  String get customerDetailAddKyc;
+
+  /// No description provided for @customerDetailKycIncompletePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC incomplete — upload CNIC & Driving License.'**
+  String get customerDetailKycIncompletePrompt;
+
+  /// No description provided for @customerDetailGuarantorSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Guarantor Information'**
+  String get customerDetailGuarantorSection;
+
+  /// No description provided for @customerDetailNoGuarantor.
+  ///
+  /// In en, this message translates to:
+  /// **'No guarantor added yet'**
+  String get customerDetailNoGuarantor;
+
+  /// No description provided for @customerDetailAddGuarantor.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Guarantor'**
+  String get customerDetailAddGuarantor;
+
+  /// No description provided for @customerDetailTapToUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to upload'**
+  String get customerDetailTapToUpload;
+
+  /// No description provided for @customerDetailKycDocumentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC Documents'**
+  String get customerDetailKycDocumentsTitle;
+
+  /// No description provided for @customerDetailKycUploadedPill.
+  ///
+  /// In en, this message translates to:
+  /// **'{uploaded} / {total} Uploaded'**
+  String customerDetailKycUploadedPill(int uploaded, int total);
+
+  /// No description provided for @guarantorModeExisting.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing Customer'**
+  String get guarantorModeExisting;
+
+  /// No description provided for @guarantorModeManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Details'**
+  String get guarantorModeManual;
+
+  /// No description provided for @guarantorNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Guarantor Name'**
+  String get guarantorNameLabel;
+
+  /// No description provided for @guarantorPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Guarantor Phone'**
+  String get guarantorPhoneLabel;
+
+  /// No description provided for @guarantorCnicLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Guarantor CNIC'**
+  String get guarantorCnicLabel;
+
+  /// No description provided for @guarantorAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Guarantor Address'**
+  String get guarantorAddressLabel;
+
+  /// No description provided for @guarantorRelationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Relation'**
+  String get guarantorRelationLabel;
 }
 
 class _AppLocalizationsDelegate

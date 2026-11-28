@@ -16,7 +16,6 @@ import 'add_customer/kyc_draft.dart';
 import 'add_customer/kyc_step.dart';
 import 'add_customer/kyc_stepper_header.dart';
 import 'add_customer/step1_cnic.dart';
-import 'add_customer/step2_photo.dart';
 import 'add_customer/step3_docs.dart';
 import 'add_customer/step4_guarantor.dart';
 
@@ -43,7 +42,15 @@ class OwnerAddCustomerWizard extends StatefulWidget {
   /// instance (see [_OwnerAddCustomerWizardState._firestore]).
   final FirebaseFirestore? firestore;
 
-  const OwnerAddCustomerWizard({super.key, this.prefilledCnic, this.editingCustomer, this.firestore});
+  final int initialStep;
+
+  const OwnerAddCustomerWizard({
+    super.key,
+    this.prefilledCnic,
+    this.editingCustomer,
+    this.firestore,
+    this.initialStep = 0,
+  });
 
   @override
   State<OwnerAddCustomerWizard> createState() => _OwnerAddCustomerWizardState();
@@ -51,7 +58,7 @@ class OwnerAddCustomerWizard extends StatefulWidget {
 
 class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
   late final KycDraft _draft;
-  final _stepKeys = List<GlobalKey>.generate(4, (_) => GlobalKey());
+  final _stepKeys = List<GlobalKey>.generate(3, (_) => GlobalKey());
   int _step = 0;
   bool _isSaving = false;
   bool _isValidating = false;
@@ -71,6 +78,7 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
   @override
   void initState() {
     super.initState();
+    _step = widget.initialStep.clamp(0, 2);
     final editing = widget.editingCustomer;
     _draft = editing != null
         ? KycDraft.fromEntity(editing)
@@ -81,8 +89,7 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
 
   List<String> _stepLabels(AppLocalizations l10n) => [
         l10n.kycWizardStepCnic,
-        l10n.kycWizardStepPhoto,
-        l10n.kycWizardStepDocs,
+        l10n.kycWizardLicense,
         l10n.kycWizardStepGuarantor,
       ];
 
@@ -157,11 +164,9 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
       case 0:
         return Step1Cnic(key: _stepKeys[0], draft: _draft, onChanged: refresh, isEdit: _isEdit);
       case 1:
-        return Step2Photo(key: _stepKeys[1], draft: _draft, onChanged: refresh);
-      case 2:
-        return Step3Docs(key: _stepKeys[2], draft: _draft, onChanged: refresh);
+        return Step3Docs(key: _stepKeys[1], draft: _draft, onChanged: refresh);
       default:
-        return Step4Guarantor(key: _stepKeys[3], draft: _draft, onChanged: refresh, shopId: currentShopId());
+        return Step4Guarantor(key: _stepKeys[2], draft: _draft, onChanged: refresh, shopId: currentShopId());
     }
   }
 
@@ -196,7 +201,7 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
                 children: [
                   if (_step > 0) TextButton(onPressed: () => setState(() => _step--), child: Text(l10n.back)),
                   Expanded(
-                    child: _step < 3
+                    child: _step < 2
                         ? DebouncedButton(text: l10n.kycWizardNext, isLoading: _isValidating, onPressed: _next)
                         : DebouncedButton(text: _isEdit ? l10n.customerDetailSaveChanges : l10n.addCustomerSave, icon: Icons.check_rounded, isLoading: _isSaving, onPressed: _save),
                   ),

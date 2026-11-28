@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/features/owner/presentation/views/add_customer/step1_cnic.dart';
-import 'package:rentalhub/features/owner/presentation/views/add_customer/step2_photo.dart';
+import 'package:rentalhub/features/owner/presentation/views/add_customer/step3_docs.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_add_customer_wizard.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,7 +45,7 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
       expect(find.byType(Step1Cnic), findsOneWidget);
-      expect(find.byType(Step2Photo), findsNothing);
+      expect(find.byType(Step3Docs), findsNothing);
     });
 
     testWidgets('valid step 1 + clean blacklist advances to step 2',
@@ -61,7 +61,7 @@ void main() {
       expect(find.text('No blacklist record found'), findsOneWidget);
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
-      expect(find.byType(Step2Photo), findsOneWidget);
+      expect(find.byType(Step3Docs), findsOneWidget);
       expect(find.byType(Step1Cnic), findsNothing);
     });
 
