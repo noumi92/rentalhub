@@ -43,7 +43,16 @@ Future<CustomerAddedSheetAction> showCustomerAddedBottomSheet(
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
+              Text(
+                l10n.customerAddedTitle,
+                textAlign: TextAlign.center,
+                style: Theme.of(ctx).textTheme.labelLarge?.copyWith(
+                      color: AppColors.accentSuccessStrong,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              const SizedBox(height: 4),
               Text(
                 customer.name,
                 maxLines: 2,

@@ -209,14 +209,15 @@ void main() {
       cubit.nextStep(balanceDue: 10000, securityDeposit: 15000);
       expect(cubit.state.errorTick, 2);
 
-      // 2. Picking Cash without toggling Balance Received blocks Continue
-      cubit.setBalanceMethod('cash');
+      // 2. Entering cash received with 'not_yet' blocks Continue
+      cubit.setCashReceivedAtHandover(5000);
+      cubit.setBalanceMethod('not_yet');
       cubit.nextStep(balanceDue: 10000, securityDeposit: 15000);
       expect(cubit.state.step, 1);
-      expect(cubit.state.error, 'payment_confirm');
+      expect(cubit.state.error, 'payment');
 
-      // 3. Confirming Balance Received advances check to deposit method
-      cubit.setBalanceReceived(true);
+      // 3. Picking Cash advances check to deposit method
+      cubit.setBalanceMethod('cash');
       cubit.nextStep(balanceDue: 10000, securityDeposit: 15000);
       expect(cubit.state.step, 1);
       expect(cubit.state.error, 'deposit');

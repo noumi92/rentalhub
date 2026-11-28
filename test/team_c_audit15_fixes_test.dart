@@ -211,8 +211,7 @@ void main() {
       );
       expect(find.text('Amount owed by customer: Rs. 5,000'),
           findsOneWidget);
-      expect(find.text('Record the refund to close the booking.'),
-          findsOneWidget);
+      expect(find.text('Complete & Close Booking'), findsOneWidget);
       await tester.tap(find.text('Mark Payment Received'));
       await tester.pump();
       expect(find.text('Owed amount collected: Rs. 5,000 via Cash'),

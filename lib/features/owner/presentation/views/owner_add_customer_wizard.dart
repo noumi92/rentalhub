@@ -140,6 +140,7 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
         );
         return;
       }
+      if (mounted) setState(() => _isSaving = false);
       final action = await showCustomerAddedBottomSheet(
         context,
         customer: result.customer,

@@ -282,7 +282,7 @@ void main() {
         OwnerCustomerAddedView(customerId: 'cust-added-1', customer: saved),
         height: 400,
       );
-      expect(await gapBelow(tester, find.byType(DebouncedButton).last), closeTo(16, 1));
+      expect(await gapBelow(tester, find.byType(OutlinedButton).last), closeTo(16, 1));
     });
   });
 

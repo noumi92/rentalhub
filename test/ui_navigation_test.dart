@@ -650,6 +650,9 @@ void main() {
         // Unified OwnerBookingDetailView handles /owner/requests/:id;
         // ownerPaymentProof stays registered as a deep-link route.
         'ownerPaymentProof',
+        // Replaced by showCustomerAddedBottomSheet in the wizard;
+        // route stays registered as a deep-link fallback.
+        'ownerCustomerAdded',
       };
 
       final routeNames =
