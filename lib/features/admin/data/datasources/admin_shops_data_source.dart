@@ -429,8 +429,9 @@ class AdminShopsDataSource {
       final currentStatus =
           (currentData['verification_status'] as String? ?? 'pending')
               .toLowerCase();
-      if (decision == 'approved' &&
-          (currentStatus == 'approved' || currentStatus == 'verified')) {
+      if (currentStatus != 'pending' &&
+          currentStatus != 'info_requested' &&
+          currentStatus.isNotEmpty) {
         return false;
       }
       if (decision != 'approved' &&

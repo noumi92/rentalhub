@@ -111,14 +111,14 @@ void main() {
       expect(loaded?.reviewedAt, isNotNull);
     });
 
-    test('decideShopApplication approves rejected/pending shop and verifies owner user',
+    test('decideShopApplication approves pending/info_requested shop and verifies owner user',
         () async {
       final fs = FakeFirebaseFirestore();
       await fs.collection('users').doc('owner1').set({'is_verified': false});
       await fs.collection('shops').doc('shop_owner1').set({
         'owner_id': 'owner1',
         'shop_name': 'Test Motors',
-        'verification_status': 'rejected',
+        'verification_status': 'info_requested',
         'is_verified': false,
       });
 

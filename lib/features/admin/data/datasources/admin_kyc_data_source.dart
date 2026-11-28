@@ -182,10 +182,10 @@ class AdminKycDataSource {
       if (currentData == null) return false;
       final currentStatus =
           (currentData['status'] as String? ?? 'submitted').toLowerCase();
-      // Block re-approving an already-verified submission unless resubmitted;
-      // allow approving submitted / resubmitted / pending / rejected records.
-      if (decision == 'verified' &&
-          (currentStatus == 'verified' || currentStatus == 'approved')) {
+      final isPendingLike = const {'submitted', 'resubmitted', 'pending', ''}
+          .contains(currentStatus);
+      var isResubmittedAfterReview = false;
+      if (currentStatus == 'verified' || currentStatus == 'approved') {
         final submittedAt = KycReviewSubmission._parseTs(
             currentData['submittedAt'] ?? currentData['updatedAt']);
         final reviewedAt = KycReviewSubmission._parseTs(
@@ -193,11 +193,12 @@ class AdminKycDataSource {
                 currentData['reviewedAt'] ??
                 currentData['verifiedAt'] ??
                 currentData['decidedAt']);
-        if (submittedAt == null ||
-            reviewedAt == null ||
-            !submittedAt.isAfter(reviewedAt)) {
-          return false;
-        }
+        isResubmittedAfterReview = submittedAt != null &&
+            reviewedAt != null &&
+            submittedAt.isAfter(reviewedAt);
+      }
+      if (!isPendingLike && !isResubmittedAfterReview) {
+        return false;
       }
       await firestore.collection('kyc_documents').doc(customerId).update({
         'status': decision,
