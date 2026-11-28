@@ -6,23 +6,22 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
-import '../../../discovery/data/models/shop_model.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/app_localizations_en.dart';
+import '../../../discovery/data/models/shop_model.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
 import '../../domain/admin_permissions.dart';
-import '../widgets/admin_detail_section.dart';
-import '../widgets/admin_list_card.dart';
 import '../widgets/admin_permission_check.dart';
-import '../widgets/shop_application_detail_sheet.dart';
 import '../widgets/admin_shell.dart';
-import '../widgets/admin_status_chip.dart';
 import '../widgets/admin_suspend_dialog.dart';
+import '../widgets/shop_application_detail_sheet.dart';
 import '../widgets/shop_detail_actions.dart';
+import '../widgets/shop_detail_management_tabs.dart';
+import '../widgets/shop_detail_overview_tab.dart';
 
-/// Phase B (B2) — one shop: plan, cars, lifetime bookings, rating,
-/// KYC and bank summary, and the admin actions — suspend/unsuspend
-/// with a reason, and message the owner on WhatsApp.
+/// One-stop Shop Management Hub: executive KPIs + 5 horizontal tabs
+/// (Overview, KYC & Docs, Fleet Cars, Bookings, Packages & Credits)
+/// with sticky owner actions.
 class AdminShopDetailView extends StatefulWidget {
   const AdminShopDetailView({super.key, required this.shopId});
 
@@ -71,13 +70,10 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
     }
   }
 
-  /// Step 2 — open the existing Cars / Bookings list for this shop.
-  void _goScoped(String path) => context.go(Uri(
-      path: path, queryParameters: {'shopId': widget.shopId}).toString());
+  void _goScoped(String path) => context.go(
+        Uri(path: path, queryParameters: {'shopId': widget.shopId}).toString(),
+      );
 
-  /// Phase 3 (3.1): a pending shop's application is decided here
-  /// — the Approvals screen is gone, so the review sheet opens
-  /// from the detail route and reloads the shop on a decision.
   void _reviewApplication() {
     final shop = _shop;
     if (shop == null) return;
@@ -85,26 +81,21 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (_) => ShopApplicationDetailSheet(
-        shop: shop,
-        onDecided: _load,
-      ),
+      builder: (_) => ShopApplicationDetailSheet(shop: shop, onDecided: _load),
     );
   }
 
   Future<void> _toggleSuspend(bool suspend) async {
     final reason = await showSuspendDialog(context, suspend: suspend);
-    if (reason == null) return;
-    if (!mounted) return;
+    if (reason == null || !mounted) return;
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
     if (reason.isEmpty) {
-      AppFeedback.showError(context, (AppLocalizations.of(context) ?? AppLocalizationsEn()).admin2_reasonRequired);
+      AppFeedback.showError(context, l10n.admin2_reasonRequired);
       return;
     }
-    // F-C1: super admin + operations only (decideVendor). See the
-    // shop application sheet for the check's contract.
     final check = await AdminPermissionCheck.check(
         context, AdminPermission.decideVendor);
-    if (!check.proceed) return;
+    if (!check.proceed || !mounted) return;
     setState(() => _isWorking = true);
     final synced = await sl<AdminShopsDataSource>().setShopSuspended(
       shopId: widget.shopId,
@@ -114,36 +105,40 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
     );
     if (!mounted) return;
     if (synced) {
-      final l10n = (AppLocalizations.of(context) ?? AppLocalizationsEn());
       AppFeedback.showSuccess(
-          context, suspend ? l10n.admin2_shopDetailSuspended : l10n.admin2_shopDetailSuspensionLifted);
+        context,
+        suspend
+            ? l10n.admin2_shopDetailSuspended
+            : l10n.admin2_shopDetailSuspensionLifted,
+      );
       await _load();
     } else {
-      AppFeedback.showError(context, (AppLocalizations.of(context) ?? AppLocalizationsEn()).admin2_serverUnreachable);
+      AppFeedback.showError(context, l10n.admin2_serverUnreachable);
     }
     setState(() => _isWorking = false);
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = (AppLocalizations.of(context) ?? AppLocalizationsEn());
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+    final padding = EdgeInsets.all(
+      windowSizeClassOf(context) == WindowSizeClass.compact ? 16 : 24,
+    );
+    final shop = _shop;
     return AdminShell(
       activeRoute: RouteNames.adminShops,
       title: l10n.admin2_shopDetailTitle,
       subtitle: l10n.admin2_shopDetailSubtitle,
       onRefresh: _load,
       onBack: () => context.go(RouteNames.adminShops),
-      // Phase 4 (4.4a) — the actions (review / message / suspend)
-      // are the sticky bar now, not the bottom of the scroll.
-      bottomBar: _shop == null
+      bottomBar: shop == null
           ? null
           : ShopDetailActions(
-              shop: _shop!,
+              shop: shop,
               isWorking: _isWorking,
-              onToggleSuspend: () => _toggleSuspend(!_shop!.suspended),
-              onReviewApplication: _shop!.verificationStatus == 'pending'
-                  ? _reviewApplication
-                  : null,
+              onToggleSuspend: () => _toggleSuspend(!shop.suspended),
+              onReviewApplication:
+                  shop.verificationStatus == 'pending' ? _reviewApplication : null,
             ),
       child: _isLoading
           ? const AppLoadingState()
@@ -152,98 +147,68 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
                   message: l10n.admin2_shopDetailLoadFailed,
                   onRetry: _load,
                 )
-              : _shop == null
+              : shop == null
                   ? AppEmptyState(title: l10n.admin2_shopDetailNotFound)
-                  : SingleChildScrollView(
-                  // Mobile-first: 16dp on a phone, 24dp on desktop.
-                  padding: EdgeInsets.all(
-                      windowSizeClassOf(context) ==
-                              WindowSizeClass.compact
-                          ? 16
-                          : 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(_shop!.shopName,
-                          style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600)),
-                      const SizedBox(height: 4),
-                      Text(
-                        l10n.admin2_shopDetailContact(_shop!.city, _shop!.address, _shop!.ownerName ?? '—', _shop!.phoneNumber),
-                        style: const TextStyle(
-                            fontSize: 13),
-                      ),
-                      const SizedBox(height: 16),
-                      Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
+                  : DefaultTabController(
+                      length: 5,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AdminFactTile(label: l10n.admin2_shopDetailPlan, value: _shop!.plan),
-                          // AD-M9: the raw `verificationStatus`
-                          // ('pending'/'approved') was shown verbatim.
-                          AdminFactTile(
-                              label: l10n.admin2_shopDetailStatus,
-                              value: _shop!.suspended ? l10n.admin2_suspended : humanizeStatus(_shop!.verificationStatus, l10n)),
-                          AdminFactTile(label: l10n.admin2_navCars, value: '$_vehicleCount'),
-                          AdminFactTile(label: l10n.admin2_shopDetailLifetimeBookings, value: '$_bookingCount'),
-                          // Honesty flag (Worker 1): no stored rating
-                          // shows '—', never the display-only fallback.
-                          AdminFactTile(
-                              label: l10n.admin2_shopDetailRating,
-                              value: _shop!.hasRealRating ? _shop!.rating.toStringAsFixed(1) : '—'),
-                          // F-m7: the real WhatsApp credits balance
-                          // from `whatsapp_credits/{shopId}` — null
-                          // means no credits document exists yet, so
-                          // the fact says so instead of a 0 that was
-                          // never stored.
-                          AdminFactTile(
-                              label: l10n.adminAuditCredits,
-                              value: _creditsBalance == null
-                                  ? l10n.adminAuditCreditsNone
-                                  : '$_creditsBalance'),
+                          Padding(
+                            padding: padding.copyWith(bottom: 0),
+                            child: ShopDetailHeaderKpis(
+                              shop: shop,
+                              vehicleCount: _vehicleCount,
+                              bookingCount: _bookingCount,
+                              creditsBalance: _creditsBalance,
+                            ),
+                          ),
+                          TabBar(
+                            isScrollable: true,
+                            tabAlignment: TabAlignment.start,
+                            tabs: [
+                              Tab(text: l10n.admin2_sidebarGroupOverview),
+                              Tab(text: l10n.admin2_shopDetailKycDocs),
+                              Tab(text: l10n.adminTabFleetCars),
+                              Tab(text: l10n.admin2_navBookings),
+                              Tab(text: l10n.adminNavPackagesCredits),
+                            ],
+                          ),
+                          Expanded(
+                            child: TabBarView(
+                              children: [
+                                ShopDetailOverviewTab(
+                                  shop: shop,
+                                  padding: padding,
+                                  onViewCars: () => _goScoped(RouteNames.adminCars),
+                                  onViewBookings: () =>
+                                      _goScoped(RouteNames.adminBookings),
+                                ),
+                                ShopDetailKycTab(
+                                  shop: shop,
+                                  padding: padding,
+                                  onReviewApplication: _reviewApplication,
+                                ),
+                                ShopDetailCarsTab(
+                                  shopId: shop.shopId,
+                                  padding: padding,
+                                ),
+                                ShopDetailBookingsTab(
+                                  shopId: shop.shopId,
+                                  padding: padding,
+                                ),
+                                ShopDetailPackagesTab(
+                                  shop: shop,
+                                  creditsBalance: _creditsBalance,
+                                  padding: padding,
+                                  onUpdated: _load,
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
-                      if (_shop!.suspended &&
-                          (_shop!.suspensionReason ?? '').isNotEmpty) ...[
-                        const SizedBox(height: 12),
-                        Text(l10n.admin2_shopDetailSuspensionReason(_shop!.suspensionReason ?? ''),
-                            style: TextStyle(
-                                fontSize: 13,
-                                color: Theme.of(context).colorScheme.error)),
-                      ],
-                      // Step 2 — entry points into the existing
-                      // Cars / Bookings screens, scoped to this shop.
-                      const SizedBox(height: 16),
-                      FilledButton(
-                        key: const Key('admin2_shopDetailViewCars'),
-                        onPressed: () => _goScoped(RouteNames.adminCars),
-                        child: Text(l10n.admin2_shopDetailViewCars),
-                      ),
-                      const SizedBox(height: 12),
-                      FilledButton(
-                        key: const Key('admin2_shopDetailViewBookings'),
-                        onPressed: () => _goScoped(RouteNames.adminBookings),
-                        child: Text(l10n.admin2_shopDetailViewBookings),
-                      ),
-                      const SizedBox(height: 20),
-                      AdminDetailSection(
-                          title: l10n.admin2_shopDetailKycDocs,
-                          lines: _shop!.kycDocuments.isEmpty
-                              ? [l10n.admin2_shopDetailNoneUploaded]
-                              : _shop!.kycDocuments.keys.toList()),
-                      AdminDetailSection(
-                          title: l10n.admin2_shopDetailBankAccounts,
-                          lines: _shop!.bankAccounts.isEmpty
-                              ? [l10n.admin2_shopDetailNoneOnFile]
-                              : _shop!.bankAccounts
-                                  .map((a) =>
-                                      '${a['type'] ?? l10n.admin2_shopDetailAccountType} — ${a['title'] ?? a['account'] ?? ''}')
-                                  .toList()),
-                    ],
-                  ),
-                ),
+                    ),
     );
   }
-
 }

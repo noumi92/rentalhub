@@ -52,26 +52,7 @@ class AdminShopListHeader extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),
         ),
-        const SizedBox(height: 12),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Wrap(
-            spacing: 8,
-            children: [
-              for (final entry in {
-                'all': l10n.filterAll,
-                'approved': l10n.statusApproved,
-                'pending': l10n.pending,
-                'suspended': l10n.admin2_suspended,
-              }.entries)
-                ChoiceChip(
-                  label: Text(entry.value),
-                  selected: filter == entry.key,
-                  onSelected: (_) => onFilter(entry.key),
-                ),
-            ],
-          ),
-        ),
+        const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [

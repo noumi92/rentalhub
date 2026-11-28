@@ -124,9 +124,9 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: AdminShopsView()));
       await tester.pumpAndSettle();
       expect(find.text('Shops & Fleet'), findsWidgets);
-      expect(find.text('All'), findsOneWidget);
+      expect(find.text('All Shops'), findsOneWidget);
       expect(find.text('Approved'), findsOneWidget);
-      expect(find.text('Suspended'), findsWidgets);
+      expect(find.text('Suspended'), findsOneWidget);
       expect(find.textContaining('No shops match'), findsOneWidget);
     });
 

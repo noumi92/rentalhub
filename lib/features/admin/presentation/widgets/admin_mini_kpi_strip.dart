@@ -64,30 +64,24 @@ class AdminMiniKpiStrip extends StatelessWidget {
                     const SizedBox(width: 6),
                   ],
                   Flexible(
-                    child: Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: '${item.label}: ',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: scheme.onSurfaceVariant,
-                            ),
-                          ),
-                          TextSpan(
-                            text: item.value,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: item.muted
-                                  ? scheme.onSurfaceVariant
-                                  : (item.accentColor ?? scheme.onSurface),
-                            ),
-                          ),
-                        ],
-                      ),
-                      maxLines: 2,
+                    child: Text(
+                      '${item.label}: ',
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    item.value,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: item.muted
+                          ? scheme.onSurfaceVariant
+                          : (item.accentColor ?? scheme.onSurface),
                     ),
                   ),
                 ],

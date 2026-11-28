@@ -5,6 +5,7 @@ import '../../../../core/utils/responsive.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/app_localizations_en.dart';
 import '../../data/datasources/admin_people_data_source.dart';
+import 'admin_mini_kpi_strip.dart';
 import 'admin_qr_code_row.dart';
 import 'admin_status_chip.dart';
 
@@ -58,7 +59,31 @@ class CustomerDetailHeader extends StatelessWidget {
                     color: AppColors.dangerTextFor(
                         Theme.of(context).brightness))),
           ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
+        AdminMiniKpiStrip(items: [
+          AdminMiniKpi(
+            label: l10n.admin2_trustTitle,
+            value: detail.trustBreakdown.total.toStringAsFixed(1),
+            icon: Icons.verified_user_rounded,
+          ),
+          AdminMiniKpi(
+            label: l10n.admin2_customerDetailTabBookings,
+            value: '${detail.completedTrips}',
+            icon: Icons.directions_car_rounded,
+          ),
+          AdminMiniKpi(
+            label: l10n.admin2_shopDetailRating,
+            value: detail.meanOwnerRating == null
+                ? '—'
+                : detail.meanOwnerRating!.toStringAsFixed(1),
+            icon: Icons.star_rounded,
+          ),
+          AdminMiniKpi(
+            label: 'KYC',
+            value: humanizeStatus(detail.kycStatus, l10n),
+            icon: Icons.badge_rounded,
+          ),
+        ]),
       ],
     );
   }

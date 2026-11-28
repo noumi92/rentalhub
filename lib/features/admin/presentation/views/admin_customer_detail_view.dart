@@ -16,24 +16,12 @@ import '../widgets/admin_shell.dart';
 import '../widgets/customer_detail_header.dart';
 import '../widgets/customer_detail_actions.dart';
 import '../widgets/customer_detail_bookings_tab.dart';
+import '../widgets/customer_detail_kyc_tab.dart';
 import '../widgets/customer_detail_notes_tab.dart';
 import '../widgets/customer_detail_profile_tab.dart';
 
-/// Phase C (C1) — one customer: the C3 trust score with its breakdown,
-/// CNIC and KYC state, blacklist state, trips and booking history,
-/// guarantor links from the bookings, admin notes, and the
-/// Watchlist/Blacklist actions.
-///
-/// Phase 2 (2.5) — tabbed like the customer-side Profile/KYC hub:
-/// Profile (trust breakdown), Bookings (history + guarantors), Notes &
-/// flags (notes, composer, watchlist/blacklist). The identity header
-/// sits above the tabs, shared by all three; the tab bodies are
-/// extracted widgets so the view stays under the 250-line cap.
-///
-/// The CNIC back-QR number is shown here ONLY for a super admin
-/// (visibility rule, 2026-11-10): the number lives in the restricted
-/// `customer_qr_codes/{customerId}` doc, the rules deny the read for
-/// anyone else, and this view never even requests it for other roles.
+/// One-stop Customer Management Hub: KPIs + horizontal tabs (Profile,
+/// KYC & Docs for decideKyc roles, Bookings, Notes & Flags) + sticky actions.
 class AdminCustomerDetailView extends StatefulWidget {
   const AdminCustomerDetailView({super.key, required this.customerId, this.loadDetail, this.resolveAdminRole, this.loadQrCode});
 
@@ -204,7 +192,8 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
               : detail == null
                   ? AppEmptyState(title: l10n.admin2_customerDetailNotFound)
                   : DefaultTabController(
-                      length: 3,
+                      key: ValueKey('customer-tabs-$_canReviewKyc'),
+                      length: _canReviewKyc ? 4 : 3,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -217,11 +206,11 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                             ),
                           ),
                           TabBar(
-                            // Three tabs at 2.0x text scale do not fit a 360dp phone side by side.
                             isScrollable: true,
                             tabAlignment: TabAlignment.start,
                             tabs: [
                               Tab(text: l10n.admin2_customerDetailTabProfile),
+                              if (_canReviewKyc) Tab(text: l10n.adminKycReviewTitle),
                               Tab(text: l10n.admin2_customerDetailTabBookings),
                               Tab(text: l10n.admin2_customerDetailTabNotes),
                             ],
@@ -230,6 +219,13 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                             child: TabBarView(
                               children: [
                                 CustomerDetailProfileTab(detail: detail, padding: padding, canReviewKyc: _canReviewKyc),
+                                if (_canReviewKyc)
+                                  CustomerDetailKycTab(
+                                    customerId: widget.customerId,
+                                    isSuperAdmin: _isSuperAdmin,
+                                    qrCode: _qrCode,
+                                    onDecided: _load,
+                                  ),
                                 CustomerDetailBookingsTab(detail: detail, padding: padding),
                                 CustomerDetailNotesTab(
                                   detail: detail,

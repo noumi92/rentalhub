@@ -260,8 +260,8 @@ void main() {
       await pumpPhone(tester, const AdminShopsView());
       expect(find.text('Metro Car Rentals'), findsOneWidget);
       expect(find.text('Lahore Motors'), findsOneWidget);
-      // Three times: horizontal sub-tab, status filter chip, and suspended shop's chip.
-      expect(find.text('Suspended'), findsNWidgets(3));
+      // Twice: horizontal sub-tab and suspended shop's chip (no duplicate filter chips).
+      expect(find.text('Suspended'), findsNWidgets(2));
       // Phase 3 (3.1): no Approvals button any more — pending is a
       // filter on this list, and the decision lives on the detail.
       expect(find.text('Approvals'), findsNothing);

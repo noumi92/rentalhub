@@ -98,6 +98,12 @@ abstract final class AdminSectionTabs {
         isActive: onShops && (activeFilter == null || activeFilter == 'all'),
       ),
       AdminSubTab(
+        label: l10n.statusApproved,
+        route: '${RouteNames.adminShops}?filter=approved',
+        icon: Icons.verified_rounded,
+        isActive: onShops && activeFilter == 'approved',
+      ),
+      AdminSubTab(
         label: l10n.adminTabPendingApprovals,
         route: '${RouteNames.adminShops}?filter=pending',
         icon: Icons.pending_actions_rounded,
@@ -105,17 +111,17 @@ abstract final class AdminSectionTabs {
         isActive: onShops && activeFilter == 'pending',
       ),
       AdminSubTab(
+        label: l10n.adminTabSuspended,
+        route: '${RouteNames.adminShops}?filter=suspended',
+        icon: Icons.block_rounded,
+        isActive: onShops && activeFilter == 'suspended',
+      ),
+      AdminSubTab(
         label: l10n.adminTabFleetCars,
         route: RouteNames.adminCars,
         icon: Icons.directions_car_rounded,
         badgeCount: carsBadge,
         isActive: activeRoute == RouteNames.adminCars,
-      ),
-      AdminSubTab(
-        label: l10n.adminTabSuspended,
-        route: '${RouteNames.adminShops}?filter=suspended',
-        icon: Icons.block_rounded,
-        isActive: onShops && activeFilter == 'suspended',
       ),
     ];
   }
