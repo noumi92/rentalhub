@@ -6,10 +6,12 @@ import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../data/datasources/admin_package_catalog_data_source.dart';
 import '../../data/datasources/admin_packages_data_source.dart';
 import '../../data/services/admin_session.dart';
 import '../../domain/admin_permissions.dart';
 import '../widgets/admin_mini_kpi_strip.dart';
+import '../widgets/admin_package_catalog_panel.dart';
 import '../widgets/admin_packages_dialogs.dart';
 import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_shell.dart';
@@ -23,11 +25,13 @@ class AdminPackagesView extends StatefulWidget {
     super.key,
     this.initialTab = 'plans',
     this.dataSource,
+    this.catalogDataSource,
     this.adminRole,
   });
 
   final String initialTab;
   final AdminPackagesDataSource? dataSource;
+  final AdminPackageCatalogDataSource? catalogDataSource;
   final String? adminRole;
 
   @override
@@ -35,7 +39,7 @@ class AdminPackagesView extends StatefulWidget {
 }
 
 class _AdminPackagesViewState extends State<AdminPackagesView> {
-  static const _validTabs = {'plans', 'requests', 'whatsapp'};
+  static const _validTabs = {'plans', 'requests', 'whatsapp', 'catalog'};
 
   late String _activeTab;
   List<AdminShopPlanRow> _shops = [];
@@ -135,42 +139,24 @@ class _AdminPackagesViewState extends State<AdminPackagesView> {
     final reason = approve ? '' : (await showAdminReasonDialog(context, title: req.shopName) ?? '');
     if (!mounted) return;
     final ok = await _ds.decideSubscriptionRequest(
-      requestId: req.requestId,
-      shopId: req.shopId,
-      tier: req.tier,
-      approve: approve,
-      reason: reason,
-      adminRole: _role,
+      requestId: req.requestId, shopId: req.shopId, tier: req.tier,
+      approve: approve, reason: reason, adminRole: _role,
     );
     if (!mounted) return;
     final l10n = AppLocalizations.of(context);
-    _reportResult(
-      ok,
-      approve
-          ? (l10n?.adminPackagesRequestApproved ?? 'Request approved.')
-          : (l10n?.adminPackagesRequestRejected ?? 'Request rejected.'),
-    );
+    _reportResult(ok, approve ? (l10n?.adminPackagesRequestApproved ?? 'Request approved.') : (l10n?.adminPackagesRequestRejected ?? 'Request rejected.'));
   }
 
   Future<void> _decideCredit(AdminCreditRequest req, bool approve) async {
     final reason = approve ? '' : (await showAdminReasonDialog(context, title: req.shopName) ?? '');
     if (!mounted) return;
     final ok = await _ds.decideCreditPurchaseRequest(
-      requestId: req.requestId,
-      shopId: req.shopId,
-      packCredits: req.packCredits,
-      approve: approve,
-      reason: reason,
-      adminRole: _role,
+      requestId: req.requestId, shopId: req.shopId, packCredits: req.packCredits,
+      approve: approve, reason: reason, adminRole: _role,
     );
     if (!mounted) return;
     final l10n = AppLocalizations.of(context);
-    _reportResult(
-      ok,
-      approve
-          ? (l10n?.adminPackagesRequestApproved ?? 'Request approved.')
-          : (l10n?.adminPackagesRequestRejected ?? 'Request rejected.'),
-    );
+    _reportResult(ok, approve ? (l10n?.adminPackagesRequestApproved ?? 'Request approved.') : (l10n?.adminPackagesRequestRejected ?? 'Request rejected.'));
   }
 
   @override
@@ -233,6 +219,11 @@ class _AdminPackagesViewState extends State<AdminPackagesView> {
                               requests: _creditRequests,
                               canManage: _canManage,
                               onDecide: _decideCredit,
+                            ),
+                          'catalog' => AdminPackageCatalogPanel(
+                              canManage: _canManage,
+                              adminRole: _role,
+                              dataSource: widget.catalogDataSource,
                             ),
                           _ => AdminShopPlansTab(
                               shops: _shops,

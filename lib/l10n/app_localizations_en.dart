@@ -11351,4 +11351,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guarantorRelationLabel => 'Relation';
+
+  @override
+  String get adminTabPackageCatalog => 'Manage Packages';
+
+  @override
+  String get adminShopPackagesSection => 'Shop Subscription Packages';
+
+  @override
+  String get adminWhatsappPackagesSection => 'WhatsApp Credit Packages';
+
+  @override
+  String get adminCreateShopPackage => 'Create Shop Package';
+
+  @override
+  String get adminEditShopPackage => 'Edit Shop Package';
+
+  @override
+  String get adminCreateWhatsappPackage => 'Create WhatsApp Package';
+
+  @override
+  String get adminEditWhatsappPackage => 'Edit WhatsApp Package';
+
+  @override
+  String get adminPackageNameLabel => 'Package Name';
+
+  @override
+  String get adminPackageMonthlyPrice => 'Monthly Price (Rs.)';
+
+  @override
+  String get adminPackageYearlyPrice => 'Yearly Price (Rs.)';
+
+  @override
+  String get adminPackageCarLimit => 'Car Limit (blank = Unlimited)';
+
+  @override
+  String get adminPackageStaffLimit => 'Staff Limit';
+
+  @override
+  String get adminPackageFreeCredits => 'Monthly Free WhatsApp Credits';
+
+  @override
+  String get adminPackageCreditsCount => 'Credits Count';
+
+  @override
+  String get adminPackagePricePkr => 'Price (Rs.)';
+
+  @override
+  String get adminPackageBestValue => 'Best Value';
+
+  @override
+  String get adminPackageUnlimited => 'Unlimited cars';
+
+  @override
+  String get adminPackageSaved => 'Package saved.';
+
+  @override
+  String get adminPackageDeleted => 'Package deleted.';
+
+  @override
+  String get adminPackageInactive => 'Inactive';
 }

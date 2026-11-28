@@ -20170,6 +20170,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Relation'**
   String get guarantorRelationLabel;
+
+  /// No description provided for @adminTabPackageCatalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Packages'**
+  String get adminTabPackageCatalog;
+
+  /// No description provided for @adminShopPackagesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop Subscription Packages'**
+  String get adminShopPackagesSection;
+
+  /// No description provided for @adminWhatsappPackagesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp Credit Packages'**
+  String get adminWhatsappPackagesSection;
+
+  /// No description provided for @adminCreateShopPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Shop Package'**
+  String get adminCreateShopPackage;
+
+  /// No description provided for @adminEditShopPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Shop Package'**
+  String get adminEditShopPackage;
+
+  /// No description provided for @adminCreateWhatsappPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Create WhatsApp Package'**
+  String get adminCreateWhatsappPackage;
+
+  /// No description provided for @adminEditWhatsappPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit WhatsApp Package'**
+  String get adminEditWhatsappPackage;
+
+  /// No description provided for @adminPackageNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Package Name'**
+  String get adminPackageNameLabel;
+
+  /// No description provided for @adminPackageMonthlyPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Price (Rs.)'**
+  String get adminPackageMonthlyPrice;
+
+  /// No description provided for @adminPackageYearlyPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly Price (Rs.)'**
+  String get adminPackageYearlyPrice;
+
+  /// No description provided for @adminPackageCarLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Car Limit (blank = Unlimited)'**
+  String get adminPackageCarLimit;
+
+  /// No description provided for @adminPackageStaffLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Limit'**
+  String get adminPackageStaffLimit;
+
+  /// No description provided for @adminPackageFreeCredits.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Free WhatsApp Credits'**
+  String get adminPackageFreeCredits;
+
+  /// No description provided for @adminPackageCreditsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Credits Count'**
+  String get adminPackageCreditsCount;
+
+  /// No description provided for @adminPackagePricePkr.
+  ///
+  /// In en, this message translates to:
+  /// **'Price (Rs.)'**
+  String get adminPackagePricePkr;
+
+  /// No description provided for @adminPackageBestValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Best Value'**
+  String get adminPackageBestValue;
+
+  /// No description provided for @adminPackageUnlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited cars'**
+  String get adminPackageUnlimited;
+
+  /// No description provided for @adminPackageSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Package saved.'**
+  String get adminPackageSaved;
+
+  /// No description provided for @adminPackageDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Package deleted.'**
+  String get adminPackageDeleted;
+
+  /// No description provided for @adminPackageInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get adminPackageInactive;
 }
 
 class _AppLocalizationsDelegate

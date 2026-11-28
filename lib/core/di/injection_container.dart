@@ -30,6 +30,7 @@ import '../../features/admin/data/datasources/admin_people_data_source.dart';
 import '../../features/admin/data/datasources/admin_kyc_data_source.dart';
 import '../../features/admin/data/datasources/admin_platform_data_source.dart';
 import '../../features/admin/data/datasources/admin_packages_data_source.dart';
+import '../../features/admin/data/datasources/admin_package_catalog_data_source.dart';
 import '../../features/admin/data/datasources/admin_support_data_source.dart';
 import '../../features/admin/data/services/admin_queue_counts_service.dart';
 import '../../features/admin/data/repositories/platform_settings_repository.dart';
@@ -238,6 +239,9 @@ Future<void> initDependencies() async {
   // Packages & WhatsApp credits management.
   sl.registerLazySingleton<AdminPackagesDataSource>(
     () => AdminPackagesDataSource(),
+  );
+  sl.registerLazySingleton<AdminPackageCatalogDataSource>(
+    () => AdminPackageCatalogDataSource(),
   );
   // Phase E: support, settings, announcements, reports.
   sl.registerLazySingleton<AdminSupportDataSource>(

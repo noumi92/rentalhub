@@ -185,6 +185,12 @@ abstract final class AdminSectionTabs {
         badgeCount: creditsBadge,
         isActive: activeTab == 'whatsapp',
       ),
+      AdminSubTab(
+        label: l10n.adminTabPackageCatalog,
+        route: '${RouteNames.adminSubscriptions}?tab=catalog',
+        icon: Icons.inventory_2_rounded,
+        isActive: activeTab == 'catalog',
+      ),
     ];
   }
 

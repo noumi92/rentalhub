@@ -11369,4 +11369,64 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get guarantorRelationLabel => 'رشتہ';
+
+  @override
+  String get adminTabPackageCatalog => 'پیکیجز کا انتظام';
+
+  @override
+  String get adminShopPackagesSection => 'شاپ سبسکرپشن پیکیجز';
+
+  @override
+  String get adminWhatsappPackagesSection => 'واٹس ایپ کریڈٹ پیکیجز';
+
+  @override
+  String get adminCreateShopPackage => 'نیا شاپ پیکیج بنائیں';
+
+  @override
+  String get adminEditShopPackage => 'شاپ پیکیج میں ترمیم کریں';
+
+  @override
+  String get adminCreateWhatsappPackage => 'نیا واٹس ایپ پیکیج بنائیں';
+
+  @override
+  String get adminEditWhatsappPackage => 'واٹس ایپ پیکیج میں ترمیم کریں';
+
+  @override
+  String get adminPackageNameLabel => 'پیکیج کا نام';
+
+  @override
+  String get adminPackageMonthlyPrice => 'ماہانہ قیمت (روپے)';
+
+  @override
+  String get adminPackageYearlyPrice => 'سالانہ قیمت (روپے)';
+
+  @override
+  String get adminPackageCarLimit => 'گاڑیوں کی حد (خالی = لامحدود)';
+
+  @override
+  String get adminPackageStaffLimit => 'عملے کی حد';
+
+  @override
+  String get adminPackageFreeCredits => 'ماہانہ مفت واٹس ایپ کریڈٹس';
+
+  @override
+  String get adminPackageCreditsCount => 'کریڈٹس کی تعداد';
+
+  @override
+  String get adminPackagePricePkr => 'قیمت (روپے)';
+
+  @override
+  String get adminPackageBestValue => 'بہترین قدر';
+
+  @override
+  String get adminPackageUnlimited => 'لامحدود گاڑیاں';
+
+  @override
+  String get adminPackageSaved => 'پیکیج محفوظ ہو گیا۔';
+
+  @override
+  String get adminPackageDeleted => 'پیکیج حذف ہو گیا۔';
+
+  @override
+  String get adminPackageInactive => 'غیر فعال';
 }
